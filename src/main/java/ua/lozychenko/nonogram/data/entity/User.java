@@ -62,6 +62,10 @@ public class User implements UserDetails {
         this.email = email;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
     public void setPassword(String password) {
         this.password = password;
     }
@@ -87,10 +91,6 @@ public class User implements UserDetails {
         return List.of(getRole());
     }
 
-    public String getPassword() {
-        return getPassword();
-    }
-
     @Override
     public String getUsername() {
         return getNickname();
@@ -98,17 +98,17 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return isActivated();
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return isActivated();
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return isActivated();
     }
 
     @Override
