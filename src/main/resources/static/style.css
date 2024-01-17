@@ -1,0 +1,23 @@
+.w-30 {
+    width: 30%;
+}
+
+.h-78 {
+    height: 78.25%;
+}
+
+.bg-bamboo-green {
+    background-color: #6B9362;
+}
+.bg-bamboo-green-light {
+    background-color: #8cb382;
+}
+
+.bg-bamboo-brown {
+    background-color: #C59C60;
+}
+
+.fixed-top-on-scroll {
+    position: sticky;
+    top: 0;
+}
