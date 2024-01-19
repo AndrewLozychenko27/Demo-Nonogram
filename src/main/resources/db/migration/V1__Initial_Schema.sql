@@ -5,19 +5,13 @@ CREATE SEQUENCE solution_seq START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE game_seq START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE suggestion_seq START WITH 1 INCREMENT BY 1;
 
-CREATE TABLE role (
-    id int8 PRIMARY KEY,
-    name varchar(256) NOT NULL UNIQUE
-);
-
 CREATE TABLE users (
     id int8 PRIMARY KEY,
     nickname varchar(256) NOT NULL UNIQUE,
     email varchar(256) NOT NULL UNIQUE,
     password varchar(256) NOT NULL,
     activated boolean NOT NULL DEFAULT FALSE,
-    role_id int8 NOT NULL,
-    CONSTRAINT FK_users_role FOREIGN KEY (role_id) REFERENCES role(id)
+    role varchar(256) NOT NULL
 );
 
 CREATE TABLE cell (
