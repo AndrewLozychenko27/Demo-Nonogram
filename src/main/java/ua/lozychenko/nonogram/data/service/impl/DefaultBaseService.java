@@ -28,6 +28,11 @@ public abstract class DefaultBaseService<Entity> implements BaseService<Entity> 
     }
 
     @Override
+    public Entity edit(Entity source, Entity changes) {
+        return repo.save(changes);
+    }
+
+    @Override
     public boolean delete(Long id) {
         boolean exists = repo.existsById(id);
         if (exists) {
