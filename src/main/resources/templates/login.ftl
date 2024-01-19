@@ -1,13 +1,14 @@
-<#import "macros/common.ftl" as c />
-<#import "macros/parts.ftl" as p />
+<#import "parts/common.ftl" as c />
 
 <@c.page "Login">
-    <#if error??>error</#if>
     <div class="w-30 m-auto">
-        <@p.form "Sign In" "login" "POST" >
-            <@p.input "nickname" "Nickname" />
-            <@p.input "password" "Password" true />
-            <@p.submit "Accept" />
-        </@p.form>
+        <@c.formBody "Sign In" >
+            <@c.form "login" >
+                <@c.input "Nickname" />
+                <@c.password />
+                <@c.submitPair "Log in" />
+                <@c.link "Sign up" "user/create" 'warning w-100' />
+            </@c.form>
+        </@c.formBody>
     </div>
 </@c.page>
