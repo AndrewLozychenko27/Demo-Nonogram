@@ -111,11 +111,60 @@
     </div>
 </#macro>
 
+<#macro inputValid label name >
+    <#assign
+    status = springMacroRequestContext.getBindStatus(name)>
+
+    <div class="mb-3 row">
+        <label for="${name}" class="col-sm-4 col-form-label">${label}</label>
+        <div class="col-sm-8">
+            <input type="text" class="form-control ${status.isError()?then('is-invalid', 'is-valid')}" name="${name}"
+                   value="<#nested>">
+            <#if status.isError()>
+                <div class="invalid-feedback">
+                    <#list status.errorMessages as error>
+                        <b>${error}</b>
+                        <#if error_has_next> sep </#if>
+                    </#list>
+                </div>
+            <#else>
+                <div class="invalid-feedback">
+                    Correct
+                </div>
+            </#if>
+        </div>
+    </div>
+</#macro>
+
 <#macro password label="Password" name="password" >
     <div class="mb-3 row">
         <label for="${name}" class="col-sm-4 col-form-label">${label}</label>
         <div class="col-sm-8">
             <input type="password" class="form-control" name="${name}">
+        </div>
+    </div>
+</#macro>
+
+<#macro passwordValid label="Password" name="user.password" >
+    <#assign
+    status = springMacroRequestContext.getBindStatus(name)>
+
+    <div class="mb-3 row">
+        <label for="${name}" class="col-sm-4 col-form-label">${label}</label>
+        <div class="col-sm-8">
+            <input type="password" class="form-control ${status.isError()?then('is-invalid', 'is-valid')}" name="${name}">
+            <#if status.isError()>
+                <div class="invalid-feedback">
+                    <#list status.errorMessages as error>
+                        <b>${error}</b>
+                        <#if error_has_next> sep </#if>
+                    </#list>
+                </div>
+            <#else>
+                <div class="invalid-feedback">
+                    Correct
+                </div>
+            </#if>
         </div>
     </div>
 </#macro>
