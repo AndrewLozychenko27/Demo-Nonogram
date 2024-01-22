@@ -1,6 +1,7 @@
 package ua.lozychenko.nonogram.data.service.impl;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import ua.lozychenko.nonogram.controller.composite.EditForm;
 import ua.lozychenko.nonogram.data.service.BaseService;
 
 import java.util.List;
@@ -28,8 +29,8 @@ public abstract class DefaultBaseService<Entity> implements BaseService<Entity> 
     }
 
     @Override
-    public Entity edit(Entity source, Entity changes) {
-        return repo.save(changes);
+    public Entity edit(EditForm<Entity> editForm) {
+        return repo.save(editForm.getSource());
     }
 
     @Override

@@ -1,5 +1,7 @@
 package ua.lozychenko.nonogram.data.service;
 
+import ua.lozychenko.nonogram.controller.composite.EditForm;
+
 import java.util.List;
 
 public interface BaseService<Entity> {
@@ -9,7 +11,7 @@ public interface BaseService<Entity> {
 
     Entity add(Entity entity);
 
-    Entity edit(Entity source, Entity changes);
+    Entity edit(EditForm<Entity> editForm);
 
     boolean delete(Long id);
 }
