@@ -1,7 +1,11 @@
 package ua.lozychenko.nonogram.controller.composite;
 
+import javax.validation.Valid;
+
 public class EditForm<T> {
     private T source;
+
+    @Valid
     private T changes;
 
     public EditForm(T source, T changes) {
