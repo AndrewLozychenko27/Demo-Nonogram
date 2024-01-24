@@ -1,10 +1,11 @@
-<#import "util.ftl" as u />
-<#include "security.ftl" />
+<#import "util.ftl" as u/>
+<#include "security.ftl"/>
 
 <#macro page title>
-    <html>
+    <html lang="en">
     <head>
         <title>${title}</title>
+        <meta charset="UTF-8">
         <link rel="stylesheet" href="../../static/style.css">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
               integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
@@ -14,7 +15,7 @@
     <div id="header">
         <nav class="navbar navbar-expand-lg bg-bamboo-green-light">
             <div class="container-fluid w-75">
-                <a class="navbar-brand" href="<@u.path "" />">Nonogram</a>
+                <a class="navbar-brand" href="<@u.path ""/>">Nonogram</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                         data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
@@ -26,12 +27,12 @@
                         </li>
                     </ul>
                     <#if currentUser??>
-                        <a class="inline navbar-brand" href="<@u.path "user/profile" />">${currentUser.nickname}</a>
+                        <a class="inline navbar-brand" href="<@u.path "user/profile"/>">${currentUser.nickname}</a>
                         <@form "logout">
-                            <@submit "Log out" "dark" />
+                            <@submit "Log out" "dark"/>
                         </@form>
                     <#else>
-                        <@link "Sign in" "login" "dark" />
+                        <@link "Sign in" "login" "dark"/>
                     </#if>
                 </div>
             </div>
@@ -89,7 +90,7 @@
     </html>
 </#macro>
 
-<#macro field label value >
+<#macro field label value>
     <div class="mb-3 row">
         <label class="col-sm-4 col-form-label">${label}</label>
         <div class="col-sm-8">
@@ -98,11 +99,16 @@
     </div>
 </#macro>
 
-<#macro hidden name value >
+<#macro hidden name value>
     <input type="hidden" name="${name}" value="${value}">
 </#macro>
 
-<#macro input label name=label?c_lower_case >
+<#macro bind path>
+    <#assign
+    status = springMacroRequestContext.getBindStatus(path)>
+</#macro>
+
+<#macro input label name=label?c_lower_case>
     <div class="mb-3 row">
         <label for="${name}" class="col-sm-4 col-form-label">${label}</label>
         <div class="col-sm-8">
@@ -111,20 +117,18 @@
     </div>
 </#macro>
 
-<#macro inputValid label name >
-    <#assign
-    status = springMacroRequestContext.getBindStatus(name)>
+<#macro inputValid label name>
+    <#local nestedContent><#nested></#local>
 
     <div class="mb-3 row">
         <label for="${name}" class="col-sm-4 col-form-label">${label}</label>
         <div class="col-sm-8">
-            <input type="text" class="form-control ${status.isError()?then('is-invalid', 'is-valid')}" name="${name}"
-                   value="<#nested>">
+            <input type="text" name="${name}" value="${nestedContent}"
+                   class="form-control <#if nestedContent?has_content || status.isError()>${status.isError()?then('is-invalid', 'is-valid')}</#if>">
             <#if status.isError()>
                 <div class="invalid-feedback">
                     <#list status.errorMessages as error>
-                        <b>${error}</b>
-                        <#if error_has_next> sep </#if>
+                        ${error}
                     </#list>
                 </div>
             <#else>
@@ -136,7 +140,7 @@
     </div>
 </#macro>
 
-<#macro password label="Password" name="password" >
+<#macro password label="Password" name="password">
     <div class="mb-3 row">
         <label for="${name}" class="col-sm-4 col-form-label">${label}</label>
         <div class="col-sm-8">
@@ -145,19 +149,18 @@
     </div>
 </#macro>
 
-<#macro passwordValid label="Password" name="user.password" >
-    <#assign
-    status = springMacroRequestContext.getBindStatus(name)>
+<#macro passwordValid label="Password" name="password">
+    <#local nestedContent><#nested></#local>
 
     <div class="mb-3 row">
         <label for="${name}" class="col-sm-4 col-form-label">${label}</label>
         <div class="col-sm-8">
-            <input type="password" class="form-control ${status.isError()?then('is-invalid', 'is-valid')}" name="${name}">
+            <input type="password" name="${name}" value="${nestedContent}"
+                   class="form-control <#if nestedContent?has_content || status.isError()>${status.isError()?then('is-invalid', 'is-valid')}</#if>">
             <#if status.isError()>
                 <div class="invalid-feedback">
                     <#list status.errorMessages as error>
-                        <b>${error}</b>
-                        <#if error_has_next> sep </#if>
+                        ${error}
                     </#list>
                 </div>
             <#else>
@@ -169,14 +172,14 @@
     </div>
 </#macro>
 
-<#macro submit label style="success" >
+<#macro submit label style="success">
     <input type="submit" class="btn btn-outline-${style}" value="${label}">
 </#macro>
 
-<#macro submitPair label cancel="" >
+<#macro submitPair label cancel="">
     <div class="mb-3 mt-4 row">
         <div class="col-sm-6">
-            <@link "Cancel" cancel "btn btn-outline-danger" />
+            <@link "Cancel" cancel "btn btn-outline-danger"/>
         </div>
         <div class="col-sm-6 d-flex flex-row-reverse">
             <button type="submit" class="btn btn-outline-success">${label}</button>
@@ -184,24 +187,24 @@
     </div>
 </#macro>
 
-<#macro formBody label >
+<#macro formBody label>
     <div class="m-3 p-3 border border-success-subtle rounded-3 px-4">
         <div class="row">
             <h3 class="text-center my-3">${label}</h3>
         </div>
         <div class="my-3">
-            <#nested />
+            <#nested/>
         </div>
     </div>
 </#macro>
 
-<#macro form action >
-    <form action="<@u.path action />" method="POST" class="m-0">
+<#macro form action>
+    <form action="<@u.path action/>" method="POST" class="m-0">
         <input type="hidden" name="_csrf" value="${_csrf.token}"/>
-        <#nested />
+        <#nested/>
     </form>
 </#macro>
 
-<#macro link label path style="secondary" >
+<#macro link label path style="secondary">
     <a class="btn btn-outline-${style}" role="button" href="<@u.path path />">${label}</a>
 </#macro>
