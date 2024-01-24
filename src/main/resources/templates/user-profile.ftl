@@ -1,12 +1,13 @@
-<#import "parts/common.ftl" as c />
+<#import "parts/common.ftl" as c/>
 
-<@c.page "Profile" >
+<@c.page "Profile">
     <div class="w-30 m-auto">
-        <@c.field "Email" user.email />
-        <@c.field "Nickname" user.nickname />
-        <@c.field "Role" user.role.name() />
-        <div>
-            <@c.link "Edit" "user/edit" "warning" />
-        </div>
+        <@c.formBody "Profile">
+            <@c.field "Email" user.email/>
+            <@c.field "Nickname" user.nickname/>
+            <div>
+                <@c.link "Edit" "user/edit" "warning"/>
+            </div>
+        </@c.formBody>
     </div>
 </@c.page>
