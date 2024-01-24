@@ -5,19 +5,24 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import ua.lozychenko.nonogram.constraint.group.CredentialsGroup;
+import ua.lozychenko.nonogram.constraint.group.PasswordGroup;
+import ua.lozychenko.nonogram.constraint.group.UniqueEmailGroup;
+import ua.lozychenko.nonogram.constraint.util.ValidationHelper;
 import ua.lozychenko.nonogram.controller.composite.UserEditForm;
 import ua.lozychenko.nonogram.data.entity.User;
 import ua.lozychenko.nonogram.data.service.UserService;
 
-import javax.validation.Valid;
-
 @Controller
 @RequestMapping("/user")
 public class UserController {
+    public static final String BINDING_RESULT = "org.springframework.validation.BindingResult.";
     private final UserService userService;
 
     public UserController(UserService userService) {
@@ -47,14 +52,19 @@ public class UserController {
     }
 
     @PostMapping("/create")
-    public String createUser(@Valid User user, BindingResult result, Model model) {
+    public String createUser(@Validated({UniqueEmailGroup.class, CredentialsGroup.class, PasswordGroup.class}) User user,
+                             BindingResult result,
+                             Model model,
+                             RedirectAttributes redirectAttributes) {
         String view;
 
         if (result.hasErrors()) {
+            model.addAttribute(BINDING_RESULT + "user", ValidationHelper.filterErrors(result));
             view = "user-create";
         } else {
             userService.add(user);
-            view = "redirect:/";
+            redirectAttributes.addFlashAttribute("nickname", user.getNickname());
+            view = "redirect:/login";
         }
 
         return view;
@@ -66,14 +76,23 @@ public class UserController {
     }
 
     @GetMapping("/edit")
-    public String editForm() {
+    public String editForm(@ModelAttribute UserEditForm userEditForm) {
         return "user-edit";
     }
 
     @PostMapping("/edit")
-    public String edit(UserEditForm editForm) {
-        userService.edit(editForm);
+    public String edit(@Validated(CredentialsGroup.class) UserEditForm editForm, BindingResult result, Model model) {
+        String view;
 
-        return "redirect:/user/profile";
+        if (result.hasErrors()) {
+            model.addAttribute(BINDING_RESULT + "userEditForm", ValidationHelper.filterErrors(result));
+            model.addAttribute("changes", editForm.getChanges());
+            view = "user-edit";
+        } else {
+            userService.edit(editForm);
+            view = "redirect:/user/profile";
+        }
+
+        return view;
     }
 }
