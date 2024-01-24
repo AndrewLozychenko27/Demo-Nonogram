@@ -37,9 +37,11 @@ public class DefaultUserService extends DefaultBaseService<User> implements User
     public User edit(UserEditForm userEditForm) {
         User source = userEditForm.getSource();
         User changes = userEditForm.getChanges();
+
         source.setNickname(changes.getNickname());
-        source.setEmail(changes.getEmail());
-        source.setPassword(encoder.encode(source.getPassword()));
+        if (!source.getEmail().equals(changes.getEmail())) {
+            source.setEmail(changes.getEmail());
+        }
 
         return repo.save(source);
     }
@@ -47,6 +49,11 @@ public class DefaultUserService extends DefaultBaseService<User> implements User
     @Override
     public Optional<User> findByNickname(String nickname) {
         return repo.findByNickname(nickname);
+    }
+
+    @Override
+    public Optional<User> findByEmail(String email) {
+        return repo.findByEmail(email);
     }
 
     @Override

@@ -9,4 +9,6 @@ public interface UserService extends BaseService<User> {
     User edit(UserEditForm userEditForm);
 
     Optional<User> findByNickname(String nickname);
+
+    Optional<User> findByEmail(String email);
 }
