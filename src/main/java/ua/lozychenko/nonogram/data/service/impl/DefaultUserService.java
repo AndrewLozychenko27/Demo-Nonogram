@@ -38,12 +38,19 @@ public class DefaultUserService extends DefaultBaseService<User> implements User
         User source = userEditForm.getSource();
         User changes = userEditForm.getChanges();
 
-        source.setNickname(changes.getNickname());
-        if (!source.getEmail().equals(changes.getEmail())) {
-            source.setEmail(changes.getEmail());
+        source.setNickname(getIfChanged(source.getNickname(), changes.getNickname()));
+        source.setEmail(getIfChanged(source.getEmail(), changes.getEmail()));
+        source.setRole(getIfChanged(source.getRole(), changes.getRole()));
+        source.setActivated(getIfChanged(source.isActivated(), changes.isActivated()));
+        if (changes.getPassword() != null && !encoder.matches(changes.getPassword(), source.getPassword())) {
+            source.setPassword(encoder.encode(changes.getPassword()));
         }
 
         return repo.save(source);
+    }
+
+    private <T> T getIfChanged(T source, T changes) {
+        return (changes != null && !source.equals(changes)) ? changes : source;
     }
 
     @Override
@@ -54,6 +61,11 @@ public class DefaultUserService extends DefaultBaseService<User> implements User
     @Override
     public Optional<User> findByEmail(String email) {
         return repo.findByEmail(email);
+    }
+
+    @Override
+    public boolean isPasswordMatched(Long id, String password) {
+        return encoder.matches(password, repo.getReferenceById(id).getPassword());
     }
 
     @Override

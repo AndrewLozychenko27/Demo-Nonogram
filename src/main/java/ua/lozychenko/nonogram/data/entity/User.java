@@ -49,14 +49,14 @@ public class User implements UserDetails {
     @Transient
     @NotEmpty(message = "Password confirmation is required", groups = PasswordGroup.class)
     private String passwordConfirmation;
-    private boolean activated;
+    private Boolean activated;
     @Enumerated(EnumType.STRING)
     private Role role;
 
     public User() {
     }
 
-    public User(String nickname, String email, String password, String passwordConfirmation, Role role) {
+    public User(String nickname, String email, String password, String passwordConfirmation, Boolean activated, Role role) {
         this.nickname = nickname;
         this.email = email;
         this.password = password;
@@ -105,7 +105,7 @@ public class User implements UserDetails {
         this.passwordConfirmation = passwordConfirmation;
     }
 
-    public boolean isActivated() {
+    public Boolean isActivated() {
         return activated;
     }
 

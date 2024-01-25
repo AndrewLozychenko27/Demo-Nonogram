@@ -1,6 +1,10 @@
 package ua.lozychenko.nonogram.controller;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,13 +20,18 @@ import ua.lozychenko.nonogram.constraint.group.PasswordGroup;
 import ua.lozychenko.nonogram.constraint.group.UniqueEmailGroup;
 import ua.lozychenko.nonogram.constraint.util.ValidationHelper;
 import ua.lozychenko.nonogram.controller.composite.UserEditForm;
+import ua.lozychenko.nonogram.data.entity.Role;
 import ua.lozychenko.nonogram.data.entity.User;
 import ua.lozychenko.nonogram.data.service.UserService;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
 
 @Controller
 @RequestMapping("/user")
 public class UserController {
     public static final String BINDING_RESULT = "org.springframework.validation.BindingResult.";
+    public static final String BINDING_RESULT_EDIT_FORM = BINDING_RESULT + "userEditForm";
     private final UserService userService;
 
     public UserController(UserService userService) {
@@ -81,11 +90,13 @@ public class UserController {
     }
 
     @PostMapping("/edit")
-    public String edit(@Validated(CredentialsGroup.class) UserEditForm editForm, BindingResult result, Model model) {
+    public String edit(@Validated(CredentialsGroup.class) UserEditForm editForm,
+                       BindingResult result,
+                       Model model) {
         String view;
 
         if (result.hasErrors()) {
-            model.addAttribute(BINDING_RESULT + "userEditForm", ValidationHelper.filterErrors(result));
+            model.addAttribute(BINDING_RESULT_EDIT_FORM, ValidationHelper.filterErrors(result));
             model.addAttribute("changes", editForm.getChanges());
             view = "user-edit";
         } else {
@@ -94,5 +105,62 @@ public class UserController {
         }
 
         return view;
+    }
+
+    @GetMapping("/reset-password")
+    public String resetPasswordForm() {
+        return "user-reset-password";
+    }
+
+    @PostMapping("/reset-password")
+    public String resetPassword(@Validated(PasswordGroup.class) UserEditForm editForm,
+                                BindingResult result,
+                                Model model) {
+        String view;
+
+        if (result.hasErrors()) {
+            model.addAttribute("changes", editForm.getChanges());
+            result = ValidationHelper.filterErrors(result);
+            result = ValidationHelper.renameFieldError(result, "changes", "changes.passwordConfirmation");
+            model.addAttribute(BINDING_RESULT_EDIT_FORM, result);
+            view = "user-reset-password";
+        } else {
+            userService.edit(editForm);
+            view = "redirect:/user/profile";
+        }
+
+        return view;
+    }
+
+    @GetMapping("/delete")
+    public String deleteForm() {
+        return "user-delete";
+    }
+
+    @PostMapping("/delete")
+    public String delete(@AuthenticationPrincipal User user,
+                         String password,
+                         Model model,
+                         HttpServletRequest httpServletRequest) throws ServletException {
+        String view;
+
+        if (userService.isPasswordMatched(user.getId(), password)) {
+            userService.delete(user.getId());
+            httpServletRequest.logout();
+            view = "redirect:/";
+        } else {
+            model.addAttribute("error", "Wrong password");
+            view = "user-delete";
+        }
+
+        return view;
+    }
+
+    @GetMapping("/list")
+    public String users(@PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable,
+                        Model model) {
+        model.addAttribute("users", userService.findAll(pageable));
+
+        return "user-list";
     }
 }

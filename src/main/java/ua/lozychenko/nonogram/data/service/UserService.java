@@ -11,4 +11,6 @@ public interface UserService extends BaseService<User> {
     Optional<User> findByNickname(String nickname);
 
     Optional<User> findByEmail(String email);
+
+    boolean isPasswordMatched(Long id, String password);
 }

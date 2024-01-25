@@ -7,6 +7,8 @@
             <@c.field "Nickname" user.nickname/>
             <div>
                 <@c.link "Edit" "user/edit" "warning"/>
+                <@c.link "Reset password" "user/reset-password" "warning"/>
+                <@c.link "Delete" "user/delete" "danger"/>
             </div>
         </@c.formBody>
     </div>
