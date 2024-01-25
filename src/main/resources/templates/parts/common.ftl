@@ -208,3 +208,35 @@
 <#macro link label path style="secondary">
     <a class="btn btn-outline-${style}" role="button" href="<@u.path path />">${label}</a>
 </#macro>
+
+<#macro pager url page>
+    <nav>
+        <ul class="pagination">
+            <#if page.getNumber() gte 3>
+                <li class="page-item"><a class="page-link" href="<@u.path "user/list?page=0"/>">1</a></li>
+                <#if page.getNumber() gt 3>
+                    <li class="page-item disabled"><a class="page-link">...</a></li>
+                </#if>
+            </#if>
+            <#if page.getNumber() - 1 gte 1>
+                <li class="page-item"><a class="page-link" href="<@u.path "user/list?page=" + (page.getNumber() - 2)/>">${page.getNumber() - 1}</a></li>
+            </#if>
+            <#if page.getNumber() gte 1>
+                <li class="page-item"><a class="page-link" href="<@u.path "user/list?page=" + (page.getNumber() - 1)/>">${page.getNumber()}</a></li>
+            </#if>
+            <li class="page-item active"><a class="page-link">${page.getNumber() + 1}</a></li>
+            <#if page.getNumber() + 1 lt page.getTotalPages()>
+                <li class="page-item"><a class="page-link" href="<@u.path "user/list?page=" + (page.getNumber() + 1)/>">${page.getNumber() + 2}</a></li>
+            </#if>
+            <#if page.getNumber() + 2 lt page.getTotalPages()>
+                <li class="page-item"><a class="page-link" href="<@u.path "user/list?page=" + (page.getNumber() + 2)/>">${page.getNumber() + 3}</a></li>
+            </#if>
+            <#if page.getNumber() lt page.getTotalPages() - 3>
+                <#if page.getNumber() lt page.getTotalPages() - 4>
+                    <li class="page-item disabled"><a class="page-link">...</a></li>
+                </#if>
+                <li class="page-item"><a class="page-link" href="<@u.path "user/list?page=" + page.getTotalPages()/>">${page.getTotalPages()}</a></li>
+            </#if>
+        </ul>
+    </nav>
+</#macro>

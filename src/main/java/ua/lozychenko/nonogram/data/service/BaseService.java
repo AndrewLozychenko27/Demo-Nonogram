@@ -1,13 +1,13 @@
 package ua.lozychenko.nonogram.data.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import ua.lozychenko.nonogram.controller.composite.EditForm;
 
-import java.util.List;
-
 public interface BaseService<Entity> {
-    Entity getById(Long id);
+    Entity findById(Long id);
 
-    List<Entity> getAll();
+    Page<Entity> findAll(Pageable pageable);
 
     Entity add(Entity entity);
 

@@ -1,10 +1,10 @@
 package ua.lozychenko.nonogram.data.service.impl;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import ua.lozychenko.nonogram.controller.composite.EditForm;
 import ua.lozychenko.nonogram.data.service.BaseService;
-
-import java.util.List;
 
 public abstract class DefaultBaseService<Entity> implements BaseService<Entity> {
     private JpaRepository<Entity, Long> repo;
@@ -14,13 +14,13 @@ public abstract class DefaultBaseService<Entity> implements BaseService<Entity> 
     }
 
     @Override
-    public Entity getById(Long id) {
+    public Entity findById(Long id) {
         return repo.getReferenceById(id);
     }
 
     @Override
-    public List<Entity> getAll() {
-        return repo.findAll();
+    public Page<Entity> findAll(Pageable pageable) {
+        return repo.findAll(pageable);
     }
 
     @Override

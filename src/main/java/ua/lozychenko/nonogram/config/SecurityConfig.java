@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import ua.lozychenko.nonogram.data.entity.Role;
 
 @Configuration
 @EnableWebSecurity
@@ -17,11 +18,13 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeRequests((requests) ->
                         requests
-                                .antMatchers(HttpMethod.GET, "/static/**", "/login", "/user/create", "/").permitAll()
+                                .antMatchers(HttpMethod.GET, "/static/**", "/", "/login", "/user/create").permitAll()
                                 .antMatchers(HttpMethod.POST, "/login", "/user/create").permitAll()
 
-                                .antMatchers(HttpMethod.GET, "/user/profile", "/user/edit").authenticated()
-                                .antMatchers(HttpMethod.POST, "/logout", "/user/edit").authenticated()
+                                .antMatchers(HttpMethod.GET, "/user/profile", "/user/edit", "/user/reset-password", "/user/delete").authenticated()
+                                .antMatchers(HttpMethod.POST, "/logout", "/user/edit", "/user/reset-password", "/user/delete").authenticated()
+
+                                .antMatchers(HttpMethod.GET, "/user/list").hasAuthority(Role.ADMIN.getAuthority())
 
                                 .anyRequest().denyAll())
                 .formLogin(form ->
