@@ -1,5 +1,7 @@
 package ua.lozychenko.nonogram.data.service.impl;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -25,12 +27,12 @@ public class DefaultUserService extends DefaultBaseService<User> implements User
     }
 
     @Override
-    public User add(User user) {
+    public User save(User user) {
         user.setActivated(true);
         user.setRole(Role.PLAYER);
         user.setPassword(encoder.encode(user.getPassword()));
 
-        return super.add(user);
+        return super.save(user);
     }
 
     @Override
@@ -66,6 +68,11 @@ public class DefaultUserService extends DefaultBaseService<User> implements User
     @Override
     public boolean isPasswordMatched(Long id, String password) {
         return encoder.matches(password, repo.getReferenceById(id).getPassword());
+    }
+
+    @Override
+    public Page<User> findAll(String nickname, Pageable pageable) {
+        return repo.findAllByNicknameContaining(nickname, pageable);
     }
 
     @Override

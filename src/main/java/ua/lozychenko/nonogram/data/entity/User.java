@@ -61,7 +61,7 @@ public class User implements UserDetails {
         this.email = email;
         this.password = password;
         this.passwordConfirmation = passwordConfirmation;
-        this.activated = false;
+        this.activated = activated;
         this.role = role;
     }
 

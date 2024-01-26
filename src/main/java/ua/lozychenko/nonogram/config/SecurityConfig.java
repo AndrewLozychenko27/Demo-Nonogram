@@ -25,6 +25,7 @@ public class SecurityConfig {
                                 .antMatchers(HttpMethod.POST, "/logout", "/user/edit", "/user/reset-password", "/user/delete").authenticated()
 
                                 .antMatchers(HttpMethod.GET, "/user/list").hasAuthority(Role.ADMIN.getAuthority())
+                                .antMatchers(HttpMethod.POST, "/user/change-role", "/user/change-status").hasAuthority(Role.ADMIN.getAuthority())
 
                                 .anyRequest().denyAll())
                 .formLogin(form ->

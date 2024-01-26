@@ -9,7 +9,7 @@ public interface BaseService<Entity> {
 
     Page<Entity> findAll(Pageable pageable);
 
-    Entity add(Entity entity);
+    Entity save(Entity entity);
 
     Entity edit(EditForm<Entity> editForm);
 

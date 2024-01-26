@@ -24,7 +24,7 @@ public abstract class DefaultBaseService<Entity> implements BaseService<Entity> 
     }
 
     @Override
-    public Entity add(Entity entity) {
+    public Entity save(Entity entity) {
         return repo.save(entity);
     }
 

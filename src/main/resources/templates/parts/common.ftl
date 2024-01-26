@@ -48,15 +48,28 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="#">My games</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Puzzles</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-                        </li>
+                        <#if currentUser??>
+                            <#if currentUser.role == "ADMIN">
+                                <li class="nav-item">
+                                    <a class="nav-link active" aria-current="page"
+                                       href="<@u.path "user/list"/>">Users</a>
+                                </li>
+                            <#else>
+                                <li class="nav-item">
+                                    <a class="nav-link active" aria-current="page" href="#">My games</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#">Puzzles</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link disabled" aria-disabled="true">Disabled</a>
+                                </li>
+                            </#if>
+                        <#else>
+                            <li class="nav-item">
+                                <a class="nav-link active" aria-current="page" href="#">How to play</a>
+                            </li>
+                        </#if>
                     </ul>
                 </div>
             </div>
@@ -198,8 +211,8 @@
     </div>
 </#macro>
 
-<#macro form action>
-    <form action="<@u.path action/>" method="POST" class="m-0">
+<#macro form action method="POST">
+    <form action="<@u.path action/>" method="${method}" class="m-0">
         <input type="hidden" name="_csrf" value="${_csrf.token}"/>
         <#nested/>
     </form>
@@ -219,23 +232,33 @@
                 </#if>
             </#if>
             <#if page.getNumber() - 1 gte 1>
-                <li class="page-item"><a class="page-link" href="<@u.path "user/list?page=" + (page.getNumber() - 2)/>">${page.getNumber() - 1}</a></li>
+                <li class="page-item"><a class="page-link"
+                                         href="<@u.path "user/list?page=" + (page.getNumber() - 2)/>">${page.getNumber() - 1}</a>
+                </li>
             </#if>
             <#if page.getNumber() gte 1>
-                <li class="page-item"><a class="page-link" href="<@u.path "user/list?page=" + (page.getNumber() - 1)/>">${page.getNumber()}</a></li>
+                <li class="page-item"><a class="page-link"
+                                         href="<@u.path "user/list?page=" + (page.getNumber() - 1)/>">${page.getNumber()}</a>
+                </li>
             </#if>
             <li class="page-item active"><a class="page-link">${page.getNumber() + 1}</a></li>
             <#if page.getNumber() + 1 lt page.getTotalPages()>
-                <li class="page-item"><a class="page-link" href="<@u.path "user/list?page=" + (page.getNumber() + 1)/>">${page.getNumber() + 2}</a></li>
+                <li class="page-item"><a class="page-link"
+                                         href="<@u.path "user/list?page=" + (page.getNumber() + 1)/>">${page.getNumber() + 2}</a>
+                </li>
             </#if>
             <#if page.getNumber() + 2 lt page.getTotalPages()>
-                <li class="page-item"><a class="page-link" href="<@u.path "user/list?page=" + (page.getNumber() + 2)/>">${page.getNumber() + 3}</a></li>
+                <li class="page-item"><a class="page-link"
+                                         href="<@u.path "user/list?page=" + (page.getNumber() + 2)/>">${page.getNumber() + 3}</a>
+                </li>
             </#if>
             <#if page.getNumber() lt page.getTotalPages() - 3>
                 <#if page.getNumber() lt page.getTotalPages() - 4>
                     <li class="page-item disabled"><a class="page-link">...</a></li>
                 </#if>
-                <li class="page-item"><a class="page-link" href="<@u.path "user/list?page=" + page.getTotalPages()/>">${page.getTotalPages()}</a></li>
+                <li class="page-item"><a class="page-link"
+                                         href="<@u.path "user/list?page=" + (page.getTotalPages() - 1)/>">${page.getTotalPages()}</a>
+                </li>
             </#if>
         </ul>
     </nav>
