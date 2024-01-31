@@ -7,12 +7,17 @@ import org.springframework.validation.FieldError;
 import ua.lozychenko.nonogram.constraint.PasswordConfirmation;
 import ua.lozychenko.nonogram.constraint.StrongPassword;
 import ua.lozychenko.nonogram.constraint.UniqueEmail;
+import ua.lozychenko.nonogram.constraint.UniquePuzzleField;
 import ua.lozychenko.nonogram.data.entity.User;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -20,15 +25,21 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ValidationHelper {
-    public static Map<String, Integer> PRIORITY = Map.of(
-            NotEmpty.class.getSimpleName(), 0,
-            Size.class.getSimpleName(), 1,
-            Length.class.getSimpleName(), 1,
-            PasswordConfirmation.class.getSimpleName(), 1,
-            Pattern.class.getSimpleName(), 2,
-            StrongPassword.class.getSimpleName(), 2,
-            UniqueEmail.class.getSimpleName(), 3
-    );
+    public static Map<String, Integer> PRIORITY = new HashMap<>();
+
+    static {
+        PRIORITY.put(NotEmpty.class.getSimpleName(), 0);
+        PRIORITY.put(NotNull.class.getSimpleName(), 0);
+        PRIORITY.put(Size.class.getSimpleName(), 1);
+        PRIORITY.put(Min.class.getSimpleName(), 1);
+        PRIORITY.put(Max.class.getSimpleName(), 1);
+        PRIORITY.put(Length.class.getSimpleName(), 1);
+        PRIORITY.put(PasswordConfirmation.class.getSimpleName(), 1);
+        PRIORITY.put(Pattern.class.getSimpleName(), 2);
+        PRIORITY.put(StrongPassword.class.getSimpleName(), 2);
+        PRIORITY.put(UniqueEmail.class.getSimpleName(), 3);
+        PRIORITY.put(UniquePuzzleField.class.getSimpleName(), 3);
+    }
 
     public static Map<String, String> OBJECT_TO_FIELD = Map.of(
             User.class.getSimpleName().toLowerCase(Locale.ROOT), "passwordConfirmation",

@@ -7,7 +7,7 @@ import ua.lozychenko.nonogram.controller.composite.EditForm;
 import ua.lozychenko.nonogram.data.service.BaseService;
 
 public abstract class DefaultBaseService<Entity> implements BaseService<Entity> {
-    private JpaRepository<Entity, Long> repo;
+    private final JpaRepository<Entity, Long> repo;
 
     public DefaultBaseService(JpaRepository<Entity, Long> repo) {
         this.repo = repo;

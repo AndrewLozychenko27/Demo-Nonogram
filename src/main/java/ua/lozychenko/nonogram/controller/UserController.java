@@ -31,10 +31,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.util.Optional;
 
+import static ua.lozychenko.nonogram.constants.ControllerConstants.BINDING_RESULT;
+
 @Controller
 @RequestMapping("/user")
 public class UserController {
-    public static final String BINDING_RESULT = "org.springframework.validation.BindingResult.";
     public static final String BINDING_RESULT_EDIT_FORM = BINDING_RESULT + "userEditForm";
     private final UserService userService;
 

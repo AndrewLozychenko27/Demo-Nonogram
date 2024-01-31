@@ -31,12 +31,12 @@ public class User implements UserDetails {
     private Long id;
 
     @NotEmpty(message = "Nickname is required", groups = CredentialsGroup.class)
-    @Length(min = 5, max = 256, message = "Nickname must be from {min} to {max} characters long", groups = CredentialsGroup.class)
+    @Length(max = 256, message = "Nickname must be no longer than {max} characters", groups = CredentialsGroup.class)
     @Pattern(regexp = "^\\w+$", message = "Nickname must contain only a-z, A-Z, 0-9 and _", groups = CredentialsGroup.class)
     private String nickname;
 
     @NotEmpty(message = "Email is required", groups = CredentialsGroup.class)
-    @Length(min = 8, max = 256, message = "Email must be from {min} to {max} characters long", groups = CredentialsGroup.class)
+    @Length(max = 256, message = "Email must be no longer than {max} characters", groups = CredentialsGroup.class)
     @Pattern(regexp = "^\\w+@\\w{3,}\\.\\w{2,}$", message = "Email must match \"example@your.org\"", groups = CredentialsGroup.class)
     @UniqueEmail(groups = UniqueEmail.class)
     private String email;
