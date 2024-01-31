@@ -25,3 +25,43 @@
 .inline {
     display: inline-block;
 }
+
+.cell {
+    display: grid;
+    appearance: none;
+}
+
+.cell::before {
+    content: "";
+    width: 30px;
+    height: 30px;
+    transform: scale(0);
+    transition: 120ms transform ease-in-out;
+    box-shadow: inset 2em 2em black;
+}
+
+.cell:checked::before {
+    transform: scale(1);
+}
+
+.hint {
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+}
+
+.table-cell {
+    width: 30px;
+    height: 30px;
+}
+
+.field {
+    width: auto !important;
+}
+
+.b-r {
+    border-right: 2px solid black !important;
+}
+
+.b-b {
+    border-bottom: 2px solid black !important;
+}

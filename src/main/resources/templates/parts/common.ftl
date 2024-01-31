@@ -59,7 +59,7 @@
                                     <a class="nav-link active" aria-current="page" href="#">My games</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="#">Puzzles</a>
+                                    <a class="nav-link" href="<@u.path "puzzle/list"/>">Puzzles</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link disabled" aria-disabled="true">Disabled</a>
@@ -79,7 +79,7 @@
         <#nested>
     </div>
     <div id="footer">
-        <nav class="navbar navbar-expand-lg bg-bamboo-green-light">
+        <nav class="navbar navbar-expand-lg fixed-bottom bg-bamboo-green-light">
             <div class="container-fluid w-75">
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                         data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
@@ -262,4 +262,63 @@
             </#if>
         </ul>
     </nav>
+</#macro>
+
+<#macro field puzzle hints="empty">
+    <#if hints == "empty">
+        <#assign  showHints=false/>
+    <#else>
+        <#assign  showHints=true/>
+    </#if>
+    <div class="d-flex justify-content-center">
+        <table class="table table-bordered border-secondary field">
+            <thead>
+            <tr>
+                <th scope="col" class="table-active p-0"></th>
+                <#list 0..<puzzle.width as x>
+                    <th scope="col"
+                        class="table-active p-0 <#if !showHints>table-cell</#if> <#if x !=0 && (x + 1) % 5 == 0>b-r</#if> b-b">
+                        <#if showHints>
+                            <#list hints.vertical as col, sequences>
+                                <#if col == x>
+                                    <#list sequences as s>
+                                        <p class="text-center mb-0">${s}</p>
+                                    </#list>
+                                </#if>
+                            </#list>
+                        </#if>
+                    </th>
+                </#list>
+            </tr>
+            </thead>
+            <tbody>
+            <#list 0..<puzzle.height as y>
+                <tr>
+                    <th scope="row"
+                        class="table-active p-0 <#if !showHints>table-cell</#if> <#if y !=0 && (y + 1) % 5 == 0>b-b</#if> b-r align-middle">
+                        <p class="text-end mb-0 mx-2">
+                            <#if showHints>
+                                <#list hints.horizontal as row, sequences>
+                                    <#if row == y>
+                                        <#list sequences as s>
+                                            ${s}
+                                            <#if s_has_next> </#if>
+
+                                        </#list>
+                                    </#if>
+                                </#list>
+                            </#if>
+                        </p>
+                    </th>
+                    <#list 0..<puzzle.width as x>
+                        <td class="table-cell p-0 <#if x !=0 && (x + 1) % 5 == 0>b-r</#if> <#if y !=0 && (y + 1) % 5 == 0>b-b</#if>">
+                            <input type="checkbox" name="cell" class="cell" value="${y}:${x}"
+                                   <#if checked?? && checked?seq_contains(y + ":" + x)>checked</#if>>
+                        </td>
+                    </#list>
+                </tr>
+            </#list>
+            </tbody>
+        </table>
+    </div>
 </#macro>
