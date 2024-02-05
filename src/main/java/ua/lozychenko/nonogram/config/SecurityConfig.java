@@ -18,14 +18,44 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeRequests((requests) ->
                         requests
-                                .antMatchers(HttpMethod.GET, "/static/**", "/", "/login", "/user/create").permitAll()
-                                .antMatchers(HttpMethod.POST, "/login", "/user/create").permitAll()
+                                .antMatchers(HttpMethod.GET,
+                                        "/static/**",
+                                        "/",
+                                        "/login",
+                                        "/user/create")
+                                .permitAll()
+                                .antMatchers(HttpMethod.POST,
+                                        "/login",
+                                        "/user/create")
+                                .permitAll()
 
-                                .antMatchers(HttpMethod.GET, "/user/profile", "/user/edit", "/user/reset-password", "/user/delete", "/puzzle/list", "/puzzle/create", "/puzzle/play", "/puzzle/fill/{puzzle_id}").authenticated()
-                                .antMatchers(HttpMethod.POST, "/logout", "/user/edit", "/user/reset-password", "/user/delete", "/puzzle/create", "/puzzle/fill/{puzzle_id}").authenticated()
+                                .antMatchers(HttpMethod.GET,
+                                        "/user/profile",
+                                        "/user/edit",
+                                        "/user/reset-password",
+                                        "/user/delete",
+                                        "/puzzle/list",
+                                        "/puzzle/create",
+                                        "/puzzle/{puzzle_id}/play",
+                                        "/puzzle/{puzzle_id}/fill")
+                                .authenticated()
+                                .antMatchers(HttpMethod.POST,
+                                        "/logout",
+                                        "/user/edit",
+                                        "/user/reset-password",
+                                        "/user/delete",
+                                        "/puzzle/create",
+                                        "/puzzle/{puzzle_id}/fill",
+                                        "/puzzle/{puzzle_id}/check")
+                                .authenticated()
 
-                                .antMatchers(HttpMethod.GET, "/user/list").hasAuthority(Role.ADMIN.getAuthority())
-                                .antMatchers(HttpMethod.POST, "/user/change-role", "/user/change-status").hasAuthority(Role.ADMIN.getAuthority())
+                                .antMatchers(HttpMethod.GET,
+                                        "/user/list")
+                                .hasAuthority(Role.ADMIN.getAuthority())
+                                .antMatchers(HttpMethod.POST,
+                                        "/user/change-role",
+                                        "/user/change-status")
+                                .hasAuthority(Role.ADMIN.getAuthority())
 
                                 .anyRequest().denyAll())
                 .formLogin(form ->
