@@ -34,12 +34,12 @@ public class Puzzle {
 
     @NotNull(message = "Width is required")
     @Min(value = 10, message = "Width must be at least {value}")
-    @Max(value = 50, message = "Width must be no longer than {value}")
+    @Max(value = 40, message = "Width must be no longer than {value}")
     private Short width;
 
     @NotNull(message = "Height is required")
     @Min(value = 10, message = "Height must be at least {value}")
-    @Max(value = 50, message = "Height must be no longer than {value}")
+    @Max(value = 40, message = "Height must be no longer than {value}")
     private Short height;
 
     @ManyToOne
