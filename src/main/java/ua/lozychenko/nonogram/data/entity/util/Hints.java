@@ -1,4 +1,4 @@
-package ua.lozychenko.nonogram.data.entity;
+package ua.lozychenko.nonogram.data.entity.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
