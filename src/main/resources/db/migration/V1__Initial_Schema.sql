@@ -20,11 +20,6 @@ CREATE TABLE cell (
     y smallint NOT NULL
 );
 
-CREATE TABLE state (
-    id int8 PRIMARY KEY,
-    name varchar(256) NOT NULL UNIQUE
-);
-
 CREATE TABLE puzzle (
     id int8 PRIMARY KEY,
     name varchar(256) NOT NULL,
@@ -45,12 +40,11 @@ CREATE TABLE game (
     id int8 PRIMARY KEY,
     attempts integer NOT NULL DEFAULT 0,
     hints integer NOT NULL DEFAULT 0,
+    state varchar(256) NOT NULL,
     user_id int8 NOT NULL,
     puzzle_id int8 NOT NULL,
-    state_id int8 NOT NULL,
     CONSTRAINT FK_game_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    CONSTRAINT FK_game_puzzle FOREIGN KEY (puzzle_id) REFERENCES puzzle(id) ON DELETE CASCADE,
-    CONSTRAINT FK_game_state FOREIGN KEY (state_id) REFERENCES state(id)
+    CONSTRAINT FK_game_puzzle FOREIGN KEY (puzzle_id) REFERENCES puzzle(id) ON DELETE CASCADE
 );
 
 CREATE TABLE suggestion (
