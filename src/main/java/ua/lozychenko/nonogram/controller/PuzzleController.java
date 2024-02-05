@@ -17,9 +17,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ua.lozychenko.nonogram.constraint.util.ValidationHelper;
 import ua.lozychenko.nonogram.data.entity.Puzzle;
 import ua.lozychenko.nonogram.data.entity.User;
+import ua.lozychenko.nonogram.data.service.CellService;
+import ua.lozychenko.nonogram.data.service.GameService;
 import ua.lozychenko.nonogram.data.service.PuzzleService;
-
-import javax.websocket.server.PathParam;
 
 import static ua.lozychenko.nonogram.constants.ControllerConstants.BINDING_RESULT;
 
@@ -27,9 +27,13 @@ import static ua.lozychenko.nonogram.constants.ControllerConstants.BINDING_RESUL
 @RequestMapping("/puzzle")
 public class PuzzleController {
     private final PuzzleService puzzleService;
+    private final CellService cellService;
+    private final GameService gameService;
 
-    public PuzzleController(PuzzleService puzzleService) {
+    public PuzzleController(PuzzleService puzzleService, CellService cellService, GameService gameService) {
         this.puzzleService = puzzleService;
+        this.cellService = cellService;
+        this.gameService = gameService;
     }
 
     @ModelAttribute
@@ -70,16 +74,18 @@ public class PuzzleController {
         return view;
     }
 
-    @GetMapping("/play")
-    public String play(@RequestParam("puzzle_id") Puzzle puzzle,
+    @GetMapping("/{puzzle_id}/play")
+    public String play(@PathVariable("puzzle_id") Puzzle puzzle,
+                       @AuthenticationPrincipal User user,
                        Model model) {
         model.addAttribute("puzzle", puzzle);
+        model.addAttribute("game", gameService.findByPuzzleIdAndUserId(puzzle.getId(), user.getId()));
         model.addAttribute("hints", puzzleService.generateHints(puzzle));
 
         return "puzzle-play";
     }
 
-    @GetMapping("/fill/{puzzle_id}")
+    @GetMapping("/{puzzle_id}/fill")
     public String fillForm(@PathVariable("puzzle_id") Puzzle puzzle,
                            Model model) {
         model.addAttribute("puzzle", puzzle);
@@ -87,11 +93,27 @@ public class PuzzleController {
         return "puzzle-fill";
     }
 
-    @PostMapping("/fill/{puzzle_id}")
+    @PostMapping("/{puzzle_id}/fill")
     public String fill(@PathVariable("puzzle_id") Puzzle puzzle,
                        @RequestParam(name = "cell") String[] coordinates) {
-        puzzleService.save(puzzleService.parseCells(puzzle, coordinates));
+        puzzle.addCells(cellService.parseCells(coordinates));
+        puzzleService.save(puzzle);
 
         return "redirect:/puzzle/list";
+    }
+
+    @PostMapping("/{puzzle_id}/check")
+    public String check(@PathVariable("puzzle_id") Puzzle puzzle,
+                        @AuthenticationPrincipal User user,
+                        @RequestParam(name = "cell") String[] coordinates) {
+        String view;
+
+        if (gameService.check(puzzle, user, cellService.parseCells(coordinates))) {
+            view = "redirect:/puzzle/list";
+        } else {
+            view = String.format("redirect:/puzzle/%d/play", puzzle.getId());
+        }
+
+        return view;
     }
 }
