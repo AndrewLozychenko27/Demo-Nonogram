@@ -48,4 +48,15 @@ public class Cell {
     public void setY(Short y) {
         this.y = y;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        return (obj instanceof Cell cell)
+                && (this.getX().equals(cell.getX()))
+                && (this.getY().equals(cell.getY()));
+    }
 }
