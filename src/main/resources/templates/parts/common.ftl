@@ -264,12 +264,19 @@
     </nav>
 </#macro>
 
-<#macro field puzzle hints="empty">
+<#macro field puzzle hints="empty" suggestions=[]>
     <#if hints == "empty">
         <#assign  showHints=false/>
     <#else>
         <#assign  showHints=true/>
     </#if>
+
+    <#if suggestions?size == 0>
+        <#assign  isPlaying=false/>
+    <#else>
+        <#assign  isPlaying=true/>
+    </#if>
+
     <div class="d-flex justify-content-center">
         <table class="table table-bordered border-secondary field">
             <thead>
@@ -303,7 +310,6 @@
                                         <#list sequences as s>
                                             ${s}
                                             <#if s_has_next> </#if>
-
                                         </#list>
                                     </#if>
                                 </#list>
@@ -313,7 +319,7 @@
                     <#list 0..<puzzle.width as x>
                         <td class="table-cell p-0 <#if x !=0 && (x + 1) % 5 == 0>b-r</#if> <#if y !=0 && (y + 1) % 5 == 0>b-b</#if>">
                             <input type="checkbox" name="cell" class="cell" value="${y}:${x}"
-                                   <#if checked?? && checked?seq_contains(y + ":" + x)>checked</#if>>
+                                   <#if isPlaying?? && suggestions?seq_contains(y + ":" + x)>checked</#if>>
                         </td>
                     </#list>
                 </tr>

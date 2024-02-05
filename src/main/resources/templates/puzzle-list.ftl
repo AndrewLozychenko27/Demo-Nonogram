@@ -19,14 +19,14 @@
                                 <#if puzzle.user.id == currentUser.id>
                                     <p class="card-text">Your puzzle is empty, you need to fill it</p>
                                     <a class="btn btn-outline-primary" role="button"
-                                       href="<@u.path "puzzle/fill/" + puzzle.id/>">Fill</a>
+                                       href="<@u.path "puzzle/" + puzzle.id + "/fill"/>">Fill</a>
                                 <#else>
                                     <p class="card-text">Currently, it's empty</p>
                                 </#if>
                             <#else>
                                 <p class="card-text">Cells: ${puzzle.cells?size}</p>
                                 <a class="btn btn-outline-primary" role="button"
-                                   href="<@u.path "puzzle/play?puzzle_id=" + puzzle.id/>">Play</a>
+                                   href="<@u.path "puzzle/" + puzzle.id + "/play"/>">Play</a>
                             </#if>
                         </div>
                     </div>
