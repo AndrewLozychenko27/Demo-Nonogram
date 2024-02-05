@@ -5,6 +5,8 @@ import ua.lozychenko.nonogram.data.entity.Cell;
 import ua.lozychenko.nonogram.data.repo.CellRepo;
 import ua.lozychenko.nonogram.data.service.CellService;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,6 +33,13 @@ public class DefaultCellService extends DefaultBaseService<Cell> implements Cell
         }
 
         return cell;
+    }
+
+    @Override
+    public List<Cell> parseCells(String[] coordinates) {
+        return Arrays.stream(coordinates)
+                .map(coordinate -> findOrCreate(parseCell(coordinate)))
+                .toList();
     }
 
     @Override
