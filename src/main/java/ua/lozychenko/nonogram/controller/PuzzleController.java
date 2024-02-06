@@ -76,10 +76,8 @@ public class PuzzleController {
 
     @GetMapping("/{puzzle_id}/play")
     public String play(@PathVariable("puzzle_id") Puzzle puzzle,
-                       @AuthenticationPrincipal User user,
                        Model model) {
         model.addAttribute("puzzle", puzzle);
-        model.addAttribute("game", gameService.findByPuzzleIdAndUserId(puzzle.getId(), user.getId()));
         model.addAttribute("hints", puzzleService.generateHints(puzzle));
 
         return "puzzle-play";
@@ -95,25 +93,29 @@ public class PuzzleController {
 
     @PostMapping("/{puzzle_id}/fill")
     public String fill(@PathVariable("puzzle_id") Puzzle puzzle,
-                       @RequestParam(name = "cell") String[] coordinates) {
-        puzzle.addCells(cellService.parseCells(coordinates));
-        puzzleService.save(puzzle);
+                       @RequestParam(name = "cell", required = false) String[] coordinates,
+                       Model model) {
+        String view;
 
-        return "redirect:/puzzle/list";
+        if (coordinates == null) {
+            model.addAttribute("error", "Puzzle must be filled!");
+            model.addAttribute("puzzle", puzzle);
+            view = "puzzle-fill";
+        } else {
+            puzzle.addCells(cellService.parseCells(coordinates));
+            puzzleService.save(puzzle);
+            view = "redirect:/puzzle/list";
+        }
+
+        return view;
     }
 
     @PostMapping("/{puzzle_id}/check")
     public String check(@PathVariable("puzzle_id") Puzzle puzzle,
                         @AuthenticationPrincipal User user,
                         @RequestParam(name = "cell") String[] coordinates) {
-        String view;
+        gameService.check(puzzle, user, cellService.parseCells(coordinates));
 
-        if (gameService.check(puzzle, user, cellService.parseCells(coordinates))) {
-            view = "redirect:/puzzle/list";
-        } else {
-            view = String.format("redirect:/puzzle/%d/play", puzzle.getId());
-        }
-
-        return view;
+        return String.format("redirect:/puzzle/%d/play", puzzle.getId());
     }
 }

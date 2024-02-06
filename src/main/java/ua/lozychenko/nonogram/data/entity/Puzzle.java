@@ -12,6 +12,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -19,6 +20,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 public class Puzzle {
@@ -53,6 +55,9 @@ public class Puzzle {
             inverseJoinColumns = @JoinColumn(name = "cell_id")
     )
     private List<Cell> cells;
+
+    @OneToMany(mappedBy = "puzzle")
+    private List<Game> games;
 
     public Puzzle() {
         this.cells = new ArrayList<>();
@@ -111,6 +116,18 @@ public class Puzzle {
 
     public void setCells(List<Cell> cells) {
         this.cells = cells;
+    }
+
+    public Optional<Game> getGame(User user) {
+        return games.stream().filter(game -> game.getUser().getId().equals(user.getId())).findFirst();
+    }
+
+    public List<Game> getGames() {
+        return games;
+    }
+
+    public void setGames(List<Game> games) {
+        this.games = games;
     }
 
     public void addCell(Cell cell) {

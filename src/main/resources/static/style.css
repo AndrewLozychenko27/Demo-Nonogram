@@ -1,5 +1,13 @@
+.w-13 {
+    width: 13%;
+}
+
 .w-30 {
     width: 30%;
+}
+
+.w-84 {
+    width: 84%;
 }
 
 .h-78 {
@@ -64,4 +72,12 @@
 
 .b-b {
     border-bottom: 2px solid black !important;
+}
+
+.border-none {
+    border: none !important;
+}
+
+.card-height {
+    height: 180px;
 }

@@ -1,7 +1,7 @@
 <#import "util.ftl" as u/>
 <#include "security.ftl"/>
 
-<#macro page title>
+<#macro page title width="w-75">
     <html lang="en">
     <head>
         <title>${title}</title>
@@ -38,7 +38,7 @@
             </div>
         </nav>
     </div>
-    <div id="menu" class="fixed-top-on-scroll">
+    <div id="menu" class="fixed-top-on-scroll z-3">
         <nav class="navbar navbar-expand-lg bg-bamboo-green">
             <div class="container-fluid w-75">
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
@@ -75,10 +75,11 @@
             </div>
         </nav>
     </div>
-    <div id="content" class="w-75 h-78 mx-auto my-4 p-4">
+    <div id="content" class="${width} h-78 mx-auto my-4 p-4 z-0">
         <#nested>
+        <div class="h-25"></div>
     </div>
-    <div id="footer">
+    <div class="z-3 mt-4 pt-4" id="footer">
         <nav class="navbar navbar-expand-lg fixed-bottom bg-bamboo-green-light">
             <div class="container-fluid w-75">
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
@@ -103,7 +104,7 @@
     </html>
 </#macro>
 
-<#macro field label value>
+<#macro label label value>
     <div class="mb-3 row">
         <label class="col-sm-4 col-form-label">${label}</label>
         <div class="col-sm-8">
@@ -189,10 +190,10 @@
     <input type="submit" class="btn btn-outline-${style}" value="${label}">
 </#macro>
 
-<#macro submitPair label cancel="">
+<#macro submitPair label cancel="" cancelLabel="Cancel">
     <div class="mb-3 mt-4 row">
         <div class="col-sm-6">
-            <@link "Cancel" cancel "btn btn-outline-danger"/>
+            <@link cancelLabel cancel "btn btn-outline-danger"/>
         </div>
         <div class="col-sm-6 d-flex flex-row-reverse">
             <button type="submit" class="btn btn-outline-success">${label}</button>
