@@ -16,20 +16,22 @@ public class StrongPasswordValidator implements ConstraintValidator<StrongPasswo
     }
 
     @Override
-    public boolean isValid(String s, ConstraintValidatorContext context) {
+    public boolean isValid(String password, ConstraintValidatorContext context) {
         boolean isValid = false;
 
-        if (!s.matches("^.*\\d{2,}.*$")) {
-            message = String.format(MESSAGE_TEMPLATE, "numbers");
-        } else if (!s.matches("^.*[a-z]{2,}.*$")) {
-            message = String.format(MESSAGE_TEMPLATE, "small letters");
-        } else if (!s.matches("^.*[A-Z]{2,}.*$")) {
-            message = String.format(MESSAGE_TEMPLATE, "capital letters");
-        } else {
-            isValid = true;
+        if (password != null) {
+            if (!password.matches("^.*\\d{2,}.*$")) {
+                message = String.format(MESSAGE_TEMPLATE, "numbers");
+            } else if (!password.matches("^.*[a-z]{2,}.*$")) {
+                message = String.format(MESSAGE_TEMPLATE, "small letters");
+            } else if (!password.matches("^.*[A-Z]{2,}.*$")) {
+                message = String.format(MESSAGE_TEMPLATE, "capital letters");
+            } else {
+                isValid = true;
+            }
+            context.disableDefaultConstraintViolation();
+            context.buildConstraintViolationWithTemplate(message).addConstraintViolation();
         }
-        context.disableDefaultConstraintViolation();
-        context.buildConstraintViolationWithTemplate(message).addConstraintViolation();
 
         return isValid;
     }
