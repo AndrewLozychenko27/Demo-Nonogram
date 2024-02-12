@@ -10,7 +10,6 @@ import ua.lozychenko.nonogram.data.repo.GameRepo;
 import ua.lozychenko.nonogram.data.service.GameService;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class DefaultGameService extends DefaultBaseService<Game> implements GameService {
@@ -40,10 +39,5 @@ public class DefaultGameService extends DefaultBaseService<Game> implements Game
         repo.save(game);
 
         return solved;
-    }
-
-    @Override
-    public Optional<Game> findByPuzzleIdAndUserId(Long puzzleId, Long userId) {
-        return repo.findByPuzzleIdAndUserId(puzzleId, userId);
     }
 }
