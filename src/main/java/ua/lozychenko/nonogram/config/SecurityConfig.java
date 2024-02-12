@@ -30,21 +30,25 @@ public class SecurityConfig {
                                 .permitAll()
 
                                 .antMatchers(HttpMethod.GET,
-                                        "/user/profile",
-                                        "/user/edit",
-                                        "/user/reset-password",
-                                        "/user/delete",
+                                        "/user/{user_id}/profile",
+                                        "/user/{user_id}/edit",
+                                        "/user/{user_id}/reset-password",
+                                        "/user/{user_id}/delete",
                                         "/puzzle/list",
                                         "/puzzle/create",
+                                        "/puzzle/{puzzle_id}/edit",
+                                        "/puzzle/{puzzle_id}/delete",
                                         "/puzzle/{puzzle_id}/play",
                                         "/puzzle/{puzzle_id}/fill")
                                 .authenticated()
                                 .antMatchers(HttpMethod.POST,
                                         "/logout",
-                                        "/user/edit",
-                                        "/user/reset-password",
-                                        "/user/delete",
+                                        "/user/{user_id}/edit",
+                                        "/user/{user_id}/reset-password",
+                                        "/user/{user_id}/delete",
                                         "/puzzle/create",
+                                        "/puzzle/{puzzle_id}/edit",
+                                        "/puzzle/{puzzle_id}/delete",
                                         "/puzzle/{puzzle_id}/fill",
                                         "/puzzle/{puzzle_id}/check")
                                 .authenticated()

@@ -25,6 +25,7 @@ CREATE TABLE puzzle (
     name varchar(256) NOT NULL,
     width smallint NOT NULL,
     height smallint NOT NULL,
+    visible boolean NOT NULL,
     user_id int8 NOT NULL,
     CONSTRAINT FK_puzzle_users FOREIGN KEY (user_id) REFERENCES users(id)
 );

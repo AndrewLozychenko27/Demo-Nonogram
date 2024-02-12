@@ -27,7 +27,7 @@
                         </li>
                     </ul>
                     <#if currentUser??>
-                        <a class="inline navbar-brand" href="<@u.path "user/profile"/>">${currentUser.nickname}</a>
+                        <a class="inline navbar-brand" href="<@u.path "user/" + currentUser.id + "/profile"/>">${currentUser.nickname}</a>
                         <@form "logout">
                             <@submit "Log out" "dark"/>
                         </@form>

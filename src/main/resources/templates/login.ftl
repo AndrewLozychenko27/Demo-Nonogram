@@ -12,6 +12,7 @@
                 <@c.input "Nickname"><#if nickname??>${nickname}</#if></@c.input>
                 <@c.password/>
                 <@c.submitPair "Log in"/>
+                <br/>
                 <@c.link "Sign up" "user/create" 'warning w-100'/>
             </@c.form>
         </@c.formBody>
