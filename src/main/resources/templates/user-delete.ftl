@@ -3,7 +3,7 @@
 <@c.page "Delete profile">
     <div class="w-30 m-auto">
         <@c.formBody "Delete profile">
-            <@c.form "user/delete">
+            <@c.form "user/" + user.id + "/delete">
                 <h5>To confirm your account deletion you need to enter your password</h5>
                 <#if error??>
                     <div class="alert alert-danger" role="alert">
@@ -11,7 +11,7 @@
                     </div>
                 </#if>
                 <@c.password/>
-                <@c.submitPair "Delete" "user/profile"/>
+                <@c.submitPair "Delete" "user/" + user.id + "/profile"/>
             </@c.form>
         </@c.formBody>
     </div>
