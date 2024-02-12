@@ -7,7 +7,8 @@ import org.springframework.validation.FieldError;
 import ua.lozychenko.nonogram.constraint.PasswordConfirmation;
 import ua.lozychenko.nonogram.constraint.StrongPassword;
 import ua.lozychenko.nonogram.constraint.UniqueEmail;
-import ua.lozychenko.nonogram.constraint.UniquePuzzleField;
+import ua.lozychenko.nonogram.constraint.UniquePuzzleName;
+import ua.lozychenko.nonogram.data.entity.Puzzle;
 import ua.lozychenko.nonogram.data.entity.User;
 
 import javax.validation.constraints.Max;
@@ -18,7 +19,6 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -26,6 +26,8 @@ import java.util.stream.Collectors;
 
 public class ValidationHelper {
     public static Map<String, Integer> PRIORITY = new HashMap<>();
+    public static Map<ObjectCodePair, String> OBJECT_TO_FIELD = new HashMap<>();
+
 
     static {
         PRIORITY.put(NotEmpty.class.getSimpleName(), 0);
@@ -38,35 +40,24 @@ public class ValidationHelper {
         PRIORITY.put(Pattern.class.getSimpleName(), 2);
         PRIORITY.put(StrongPassword.class.getSimpleName(), 2);
         PRIORITY.put(UniqueEmail.class.getSimpleName(), 3);
-        PRIORITY.put(UniquePuzzleField.class.getSimpleName(), 3);
-    }
+        PRIORITY.put(UniquePuzzleName.class.getSimpleName(), 3);
 
-    public static Map<String, String> OBJECT_TO_FIELD = Map.of(
-            User.class.getSimpleName().toLowerCase(Locale.ROOT), "passwordConfirmation",
-            "changes", "passwordConfirmation"
-    );
+        OBJECT_TO_FIELD.put(new ObjectCodePair(User.class.getSimpleName().toLowerCase(), PasswordConfirmation.class.getSimpleName()), "passwordConfirmation");
+        OBJECT_TO_FIELD.put(new ObjectCodePair(User.class.getSimpleName().toLowerCase(), UniqueEmail.class.getSimpleName()), "email");
+        OBJECT_TO_FIELD.put(new ObjectCodePair(Puzzle.class.getSimpleName().toLowerCase(), UniquePuzzleName.class.getSimpleName()), "name");
+    }
 
     public static BindingResult filterErrors(BindingResult source) {
         BindingResult filtered = new BeanPropertyBindingResult(source.getTarget(), source.getObjectName());
 
+        if (source.hasGlobalErrors()) {
+            filterObjectErrors(source, source);
+        }
         if (source.hasFieldErrors()) {
             filterFieldsErrors(source, filtered);
         }
-        if (source.hasGlobalErrors()) {
-            filterObjectErrors(source, filtered);
-        }
 
         return filtered;
-    }
-
-    public static BindingResult renameFieldError(BindingResult result, String target, String name) {
-        FieldError fieldError = result.getFieldError(target);
-
-        if (fieldError != null) {
-            result.addError(new FieldError(fieldError.getObjectName(), name, Objects.requireNonNull(fieldError.getDefaultMessage())));
-        }
-
-        return result;
     }
 
     private static void filterFieldsErrors(BindingResult source, BindingResult filtered) {
@@ -84,7 +75,53 @@ public class ValidationHelper {
     private static void filterObjectErrors(BindingResult source, BindingResult filtered) {
         filtered.addError(source.getGlobalErrors().stream()
                 .min(Comparator.comparing(error -> PRIORITY.get(error.getCode())))
-                .map(error -> new FieldError(error.getObjectName(), OBJECT_TO_FIELD.get(error.getObjectName()), Objects.requireNonNull(error.getDefaultMessage())))
+                .map(error -> new FieldError(
+                        error.getObjectName(),
+                        OBJECT_TO_FIELD.get(new ObjectCodePair(error.getObjectName(), error.getCode())),
+                        null,
+                        false,
+                        error.getCodes(),
+                        error.getArguments(),
+                        Objects.requireNonNull(error.getDefaultMessage())))
                 .orElseThrow(IllegalArgumentException::new));
+    }
+
+    private static class ObjectCodePair {
+        private String object;
+        private String code;
+
+        public ObjectCodePair(String object, String code) {
+            this.object = object;
+            this.code = code;
+        }
+
+        public String getObject() {
+            return object;
+        }
+
+        public void setObject(String object) {
+            this.object = object;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+
+        @Override
+        public int hashCode() {
+            return object.length() * 32 + code.length();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return this == obj
+                    || (obj instanceof ObjectCodePair pair)
+                    && this.getObject().equals(pair.getObject())
+                    && this.getCode().equals(pair.getCode());
+        }
     }
 }

@@ -1,4 +1,4 @@
 package ua.lozychenko.nonogram.constraint.group;
 
-public interface UniqueEmailGroup {
+public interface SizeGroup {
 }

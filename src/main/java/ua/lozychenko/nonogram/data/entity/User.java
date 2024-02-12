@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.List;
 
 @Entity(name = "users")
+@UniqueEmail(groups = CredentialsGroup.class)
 @PasswordConfirmation(groups = PasswordGroup.class)
 public class User implements UserDetails {
     @Id
@@ -38,7 +39,6 @@ public class User implements UserDetails {
     @NotEmpty(message = "Email is required", groups = CredentialsGroup.class)
     @Length(max = 256, message = "Email must be no longer than {max} characters", groups = CredentialsGroup.class)
     @Pattern(regexp = "^\\w+@\\w{3,}\\.\\w{2,}$", message = "Email must match \"example@your.org\"", groups = CredentialsGroup.class)
-    @UniqueEmail(groups = UniqueEmail.class)
     private String email;
 
     @NotEmpty(message = "Password is required", groups = PasswordGroup.class)

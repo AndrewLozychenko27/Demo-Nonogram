@@ -1,7 +1,9 @@
 package ua.lozychenko.nonogram.data.entity;
 
 import org.hibernate.validator.constraints.Length;
-import ua.lozychenko.nonogram.constraint.UniquePuzzleField;
+import ua.lozychenko.nonogram.constraint.UniquePuzzleName;
+import ua.lozychenko.nonogram.constraint.group.NameGroup;
+import ua.lozychenko.nonogram.constraint.group.SizeGroup;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -23,26 +25,28 @@ import java.util.List;
 import java.util.Optional;
 
 @Entity
+@UniquePuzzleName(groups = NameGroup.class)
 public class Puzzle {
     @Id
     @SequenceGenerator(name = "puzzle_seq", sequenceName = "puzzle_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "puzzle_seq")
     private Long id;
 
-    @NotEmpty(message = "Puzzle name is required")
-    @Length(max = 256, message = "Puzzle name must be no longer than {max} characters")
-    @UniquePuzzleField
+    @NotEmpty(message = "Puzzle name is required", groups = NameGroup.class)
+    @Length(max = 256, message = "Puzzle name must be no longer than {max} characters", groups = NameGroup.class)
     private String name;
 
-    @NotNull(message = "Width is required")
-    @Min(value = 10, message = "Width must be at least {value}")
-    @Max(value = 40, message = "Width must be no longer than {value}")
+    @NotNull(message = "Width is required", groups = SizeGroup.class)
+    @Min(value = 10, message = "Width must be at least {value}", groups = SizeGroup.class)
+    @Max(value = 40, message = "Width must be no longer than {value}", groups = SizeGroup.class)
     private Short width;
 
-    @NotNull(message = "Height is required")
-    @Min(value = 10, message = "Height must be at least {value}")
-    @Max(value = 40, message = "Height must be no longer than {value}")
+    @NotNull(message = "Height is required", groups = SizeGroup.class)
+    @Min(value = 10, message = "Height must be at least {value}", groups = SizeGroup.class)
+    @Max(value = 40, message = "Height must be no longer than {value}", groups = SizeGroup.class)
     private Short height;
+
+    private Boolean visible;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -61,6 +65,7 @@ public class Puzzle {
 
     public Puzzle() {
         this.cells = new ArrayList<>();
+        this.visible = true;
     }
 
     public Puzzle(String name, Short width, Short height, User user) {
@@ -68,6 +73,7 @@ public class Puzzle {
         this.width = width;
         this.height = height;
         this.user = user;
+        this.visible = true;
     }
 
     public Long getId() {
@@ -100,6 +106,14 @@ public class Puzzle {
 
     public void setHeight(Short height) {
         this.height = height;
+    }
+
+    public Boolean getVisible() {
+        return visible;
+    }
+
+    public void setVisible(Boolean visible) {
+        this.visible = visible;
     }
 
     public User getUser() {
