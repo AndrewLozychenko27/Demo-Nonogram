@@ -4,24 +4,20 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ua.lozychenko.nonogram.constraint.group.CredentialsGroup;
 import ua.lozychenko.nonogram.constraint.group.PasswordGroup;
-import ua.lozychenko.nonogram.constraint.group.UniqueEmailGroup;
 import ua.lozychenko.nonogram.constraint.util.ValidationHelper;
-import ua.lozychenko.nonogram.controller.composite.UserEditForm;
 import ua.lozychenko.nonogram.data.entity.Role;
 import ua.lozychenko.nonogram.data.entity.User;
 import ua.lozychenko.nonogram.data.service.UserService;
@@ -37,27 +33,16 @@ import static ua.lozychenko.nonogram.constants.ControllerConstants.BINDING_RESUL
 @RequestMapping("/user")
 public class UserController {
     public static final String BINDING_RESULT_EDIT_FORM = BINDING_RESULT + "userEditForm";
+    public static final String BINDING_RESULT_USER = BINDING_RESULT + "user";
     private final UserService userService;
 
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
-    @ModelAttribute("user")
+    @ModelAttribute
     public User getUser() {
-        User user = new User();
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication.isAuthenticated() && authentication.getPrincipal().getClass() == User.class) {
-            user = (User) authentication.getPrincipal();
-        }
-
-        return user;
-    }
-
-    @ModelAttribute("userEditForm")
-    public UserEditForm getUserEditForm() {
-        return new UserEditForm(getUser(), new User());
+        return new User();
     }
 
     @GetMapping("/create")
@@ -66,14 +51,14 @@ public class UserController {
     }
 
     @PostMapping("/create")
-    public String createUser(@Validated({UniqueEmailGroup.class, CredentialsGroup.class, PasswordGroup.class}) User user,
+    public String createUser(@Validated({CredentialsGroup.class, PasswordGroup.class}) User user,
                              BindingResult result,
                              Model model,
                              RedirectAttributes redirectAttributes) {
         String view;
 
         if (result.hasErrors()) {
-            model.addAttribute(BINDING_RESULT + "user", ValidationHelper.filterErrors(result));
+            model.addAttribute(BINDING_RESULT_USER, ValidationHelper.filterErrors(result));
             view = "user-create";
         } else {
             userService.save(user);
@@ -84,66 +69,78 @@ public class UserController {
         return view;
     }
 
-    @GetMapping("/profile")
-    public String profile() {
+    @GetMapping("/{user_id}/profile")
+    public String profile(@PathVariable("user_id") User user,
+                          Model model) {
+        model.addAttribute("user", user);
+
         return "user-profile";
     }
 
-    @GetMapping("/edit")
-    public String editForm(@ModelAttribute UserEditForm userEditForm) {
+    @GetMapping("/{user_id}/edit")
+    public String editForm(@PathVariable("user_id") User user,
+                           Model model) {
+        model.addAttribute("user", user);
+
         return "user-edit";
     }
 
-    @PostMapping("/edit")
-    public String edit(@Validated(CredentialsGroup.class) UserEditForm editForm,
+    @PostMapping("/{user_id}/edit")
+    public String edit(@PathVariable("user_id") User user,
+                       @Validated(CredentialsGroup.class) User changes,
                        BindingResult result,
                        Model model) {
         String view;
 
         if (result.hasErrors()) {
-            model.addAttribute(BINDING_RESULT_EDIT_FORM, ValidationHelper.filterErrors(result));
-            model.addAttribute("changes", editForm.getChanges());
+            model.addAttribute(BINDING_RESULT_USER, ValidationHelper.filterErrors(result));
+            model.addAttribute("changes", changes);
             view = "user-edit";
         } else {
-            userService.edit(editForm);
-            view = "redirect:/user/profile";
+            userService.edit(user, changes);
+            view = String.format("redirect:/user/%d/profile", user.getId());
         }
 
         return view;
     }
 
-    @GetMapping("/reset-password")
-    public String resetPasswordForm() {
+    @GetMapping("/{user_id}/reset-password")
+    public String resetPasswordForm(@PathVariable("user_id") User user,
+                                    Model model) {
+        model.addAttribute("user", user);
+
         return "user-reset-password";
     }
 
-    @PostMapping("/reset-password")
-    public String resetPassword(@Validated(PasswordGroup.class) UserEditForm editForm,
+    @PostMapping("/{user_id}/reset-password")
+    public String resetPassword(@PathVariable("user_id") User user,
+                                @Validated(PasswordGroup.class) User changes,
                                 BindingResult result,
                                 Model model) {
         String view;
 
         if (result.hasErrors()) {
-            model.addAttribute("changes", editForm.getChanges());
-            result = ValidationHelper.filterErrors(result);
-            result = ValidationHelper.renameFieldError(result, "changes", "changes.passwordConfirmation");
-            model.addAttribute(BINDING_RESULT_EDIT_FORM, result);
+            model.addAttribute("changes", changes);
+            model.addAttribute(BINDING_RESULT_USER, ValidationHelper.filterErrors(result));
             view = "user-reset-password";
         } else {
-            userService.edit(editForm);
-            view = "redirect:/user/profile";
+            userService.edit(user, changes);
+            view = String.format("redirect:/user/%d/profile", user.getId());
         }
 
         return view;
     }
 
-    @GetMapping("/delete")
-    public String deleteForm() {
+    @GetMapping("/{user_id}/delete")
+    public String deleteForm(@PathVariable("user_id") User user,
+                             Model model) {
+        model.addAttribute("user", user);
+
         return "user-delete";
     }
 
-    @PostMapping("/delete")
-    public String delete(@AuthenticationPrincipal User user,
+    @PostMapping("/{user_id}/delete")
+    public String delete(@PathVariable("user_id") User user,
                          String password,
                          Model model,
                          HttpServletRequest httpServletRequest) throws ServletException {

@@ -2,7 +2,6 @@ package ua.lozychenko.nonogram.data.service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import ua.lozychenko.nonogram.controller.composite.EditForm;
 
 public interface BaseService<Entity> {
     Entity findById(Long id);
@@ -11,7 +10,7 @@ public interface BaseService<Entity> {
 
     Entity save(Entity entity);
 
-    Entity edit(EditForm<Entity> editForm);
+    Entity edit(Entity source, Entity changes);
 
     boolean delete(Long id);
 }

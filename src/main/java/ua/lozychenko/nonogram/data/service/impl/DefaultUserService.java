@@ -7,7 +7,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import ua.lozychenko.nonogram.controller.composite.UserEditForm;
 import ua.lozychenko.nonogram.data.entity.Role;
 import ua.lozychenko.nonogram.data.entity.User;
 import ua.lozychenko.nonogram.data.repo.UserRepo;
@@ -36,10 +35,7 @@ public class DefaultUserService extends DefaultBaseService<User> implements User
     }
 
     @Override
-    public User edit(UserEditForm userEditForm) {
-        User source = userEditForm.getSource();
-        User changes = userEditForm.getChanges();
-
+    public User edit(User source, User changes) {
         source.setNickname(getIfChanged(source.getNickname(), changes.getNickname()));
         source.setEmail(getIfChanged(source.getEmail(), changes.getEmail()));
         source.setRole(getIfChanged(source.getRole(), changes.getRole()));
@@ -49,10 +45,6 @@ public class DefaultUserService extends DefaultBaseService<User> implements User
         }
 
         return repo.save(source);
-    }
-
-    private <T> T getIfChanged(T source, T changes) {
-        return (changes != null && !source.equals(changes)) ? changes : source;
     }
 
     @Override

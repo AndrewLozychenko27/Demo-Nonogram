@@ -3,7 +3,6 @@ package ua.lozychenko.nonogram.data.service.impl;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import ua.lozychenko.nonogram.controller.composite.EditForm;
 import ua.lozychenko.nonogram.data.service.BaseService;
 
 public abstract class DefaultBaseService<Entity> implements BaseService<Entity> {
@@ -29,8 +28,8 @@ public abstract class DefaultBaseService<Entity> implements BaseService<Entity> 
     }
 
     @Override
-    public Entity edit(EditForm<Entity> editForm) {
-        return repo.save(editForm.getSource());
+    public Entity edit(Entity source, Entity changes) {
+        return repo.save(source);
     }
 
     @Override
@@ -40,5 +39,9 @@ public abstract class DefaultBaseService<Entity> implements BaseService<Entity> 
             repo.deleteById(id);
         }
         return exists;
+    }
+
+    protected <T> T getIfChanged(T source, T changes) {
+        return (changes != null && !source.equals(changes)) ? changes : source;
     }
 }
