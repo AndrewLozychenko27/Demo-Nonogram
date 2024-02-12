@@ -1,5 +1,7 @@
 package ua.lozychenko.nonogram.data.service.impl;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ua.lozychenko.nonogram.data.entity.Cell;
 import ua.lozychenko.nonogram.data.entity.Puzzle;
@@ -27,6 +29,28 @@ public class DefaultPuzzleService extends DefaultBaseService<Puzzle> implements 
     @Override
     public Optional<Puzzle> findByName(String name) {
         return repo.findByName(name);
+    }
+
+    @Override
+    public Page<Puzzle> findAll(Long userId, Pageable pageable) {
+        return repo.findAllVisibleForUser(userId, pageable);
+    }
+
+    @Override
+    public Puzzle edit(Puzzle source, Puzzle changes) {
+        source.setName(getIfChanged(source.getName(), changes.getName()));
+
+        return repo.save(source);
+    }
+
+    @Override
+    public boolean delete(Long id) {
+        Puzzle puzzle = repo.getReferenceById(id);
+
+        puzzle.setVisible(false);
+        repo.save(puzzle);
+
+        return true;
     }
 
     @Override
