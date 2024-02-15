@@ -2,7 +2,7 @@ package ua.lozychenko.nonogram.constraint.validator;
 
 import ua.lozychenko.nonogram.constraint.UniqueEmail;
 import ua.lozychenko.nonogram.data.entity.User;
-import ua.lozychenko.nonogram.data.service.UserService;
+import ua.lozychenko.nonogram.service.data.UserService;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

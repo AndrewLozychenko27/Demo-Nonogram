@@ -2,7 +2,7 @@ package ua.lozychenko.nonogram.constraint.validator;
 
 import ua.lozychenko.nonogram.constraint.UniquePuzzleName;
 import ua.lozychenko.nonogram.data.entity.Puzzle;
-import ua.lozychenko.nonogram.data.service.PuzzleService;
+import ua.lozychenko.nonogram.service.data.PuzzleService;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
