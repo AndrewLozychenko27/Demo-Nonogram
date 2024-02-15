@@ -1,4 +1,4 @@
-package ua.lozychenko.nonogram.data.service;
+package ua.lozychenko.nonogram.service.data;
 
 import ua.lozychenko.nonogram.data.entity.Cell;
 

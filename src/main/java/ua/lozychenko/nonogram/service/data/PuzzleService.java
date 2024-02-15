@@ -1,4 +1,4 @@
-package ua.lozychenko.nonogram.data.service;
+package ua.lozychenko.nonogram.service.data;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,5 +12,5 @@ public interface PuzzleService extends BaseService<Puzzle> {
 
     Page<Puzzle> findAll(Long userId, Pageable pageable);
 
-    Hints generateHints(Puzzle puzzle);
+    Hints generateKeys(Puzzle puzzle);
 }

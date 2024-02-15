@@ -1,4 +1,4 @@
-package ua.lozychenko.nonogram.data.service;
+package ua.lozychenko.nonogram.service.data;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
