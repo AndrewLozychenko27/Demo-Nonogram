@@ -1,9 +1,9 @@
-package ua.lozychenko.nonogram.data.service.impl;
+package ua.lozychenko.nonogram.service.data.impl;
 
 import org.springframework.stereotype.Service;
 import ua.lozychenko.nonogram.data.entity.Cell;
 import ua.lozychenko.nonogram.data.repo.CellRepo;
-import ua.lozychenko.nonogram.data.service.CellService;
+import ua.lozychenko.nonogram.service.data.CellService;
 
 import java.util.Arrays;
 import java.util.List;

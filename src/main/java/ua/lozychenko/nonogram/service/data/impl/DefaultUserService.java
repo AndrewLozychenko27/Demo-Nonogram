@@ -1,4 +1,4 @@
-package ua.lozychenko.nonogram.data.service.impl;
+package ua.lozychenko.nonogram.service.data.impl;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import ua.lozychenko.nonogram.data.entity.Role;
 import ua.lozychenko.nonogram.data.entity.User;
 import ua.lozychenko.nonogram.data.repo.UserRepo;
-import ua.lozychenko.nonogram.data.service.UserService;
+import ua.lozychenko.nonogram.service.data.UserService;
 
 import java.util.Optional;
 

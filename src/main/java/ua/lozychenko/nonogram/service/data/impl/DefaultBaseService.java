@@ -1,9 +1,9 @@
-package ua.lozychenko.nonogram.data.service.impl;
+package ua.lozychenko.nonogram.service.data.impl;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import ua.lozychenko.nonogram.data.service.BaseService;
+import ua.lozychenko.nonogram.service.data.BaseService;
 
 public abstract class DefaultBaseService<Entity> implements BaseService<Entity> {
     private final JpaRepository<Entity, Long> repo;

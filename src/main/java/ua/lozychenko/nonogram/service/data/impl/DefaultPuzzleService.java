@@ -1,4 +1,4 @@
-package ua.lozychenko.nonogram.data.service.impl;
+package ua.lozychenko.nonogram.service.data.impl;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -7,7 +7,7 @@ import ua.lozychenko.nonogram.data.entity.Cell;
 import ua.lozychenko.nonogram.data.entity.Puzzle;
 import ua.lozychenko.nonogram.data.entity.util.Hints;
 import ua.lozychenko.nonogram.data.repo.PuzzleRepo;
-import ua.lozychenko.nonogram.data.service.PuzzleService;
+import ua.lozychenko.nonogram.service.data.PuzzleService;
 
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -54,7 +54,7 @@ public class DefaultPuzzleService extends DefaultBaseService<Puzzle> implements 
     }
 
     @Override
-    public Hints generateHints(Puzzle puzzle) {
+    public Hints generateKeys(Puzzle puzzle) {
         Hints hints = new Hints();
 
         List<Cell> cells = puzzle.getCells();
