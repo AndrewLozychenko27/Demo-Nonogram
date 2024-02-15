@@ -26,32 +26,45 @@ public class SecurityConfig {
                                 .permitAll()
                                 .antMatchers(HttpMethod.POST,
                                         "/login",
-                                        "/user/create")
+                                        "/user/create",
+                                        "/game/{puzzle_id}/check",
+                                        "/game/{puzzle_id}/save-state",
+                                        "/game/{puzzle_id}/hint")
                                 .permitAll()
 
                                 .antMatchers(HttpMethod.GET,
-                                        "/user/{user_id}/profile",
-                                        "/user/{user_id}/edit",
-                                        "/user/{user_id}/reset-password",
-                                        "/user/{user_id}/delete",
                                         "/puzzle/list",
                                         "/puzzle/create",
-                                        "/puzzle/{puzzle_id}/edit",
-                                        "/puzzle/{puzzle_id}/delete",
                                         "/puzzle/{puzzle_id}/play",
                                         "/puzzle/{puzzle_id}/fill")
                                 .authenticated()
                                 .antMatchers(HttpMethod.POST,
                                         "/logout",
-                                        "/user/{user_id}/edit",
-                                        "/user/{user_id}/reset-password",
-                                        "/user/{user_id}/delete",
                                         "/puzzle/create",
-                                        "/puzzle/{puzzle_id}/edit",
-                                        "/puzzle/{puzzle_id}/delete",
-                                        "/puzzle/{puzzle_id}/fill",
                                         "/puzzle/{puzzle_id}/check")
                                 .authenticated()
+
+                                .antMatchers(HttpMethod.GET,
+                                        "/user/{user_id}/profile",
+                                        "/user/{user_id}/edit",
+                                        "/user/{user_id}/reset-password",
+                                        "/user/{user_id}/delete")
+                                .access("@securityHelper.isSelfEdit(principal, #user_id)")
+                                .antMatchers(HttpMethod.POST,
+                                        "/user/{user_id}/edit",
+                                        "/user/{user_id}/reset-password",
+                                        "/user/{user_id}/delete")
+                                .access("@securityHelper.isSelfEdit(principal, #user_id)")
+
+                                .antMatchers(HttpMethod.GET,
+                                        "/puzzle/{puzzle_id}/edit",
+                                        "/puzzle/{puzzle_id}/delete")
+                                .access("@securityHelper.isPuzzleOwner(principal, #puzzle_id)")
+                                .antMatchers(HttpMethod.POST,
+                                        "/puzzle/{puzzle_id}/edit",
+                                        "/puzzle/{puzzle_id}/delete",
+                                        "/puzzle/{puzzle_id}/fill")
+                                .access("@securityHelper.isPuzzleOwner(principal, #puzzle_id)")
 
                                 .antMatchers(HttpMethod.GET,
                                         "/user/list")
