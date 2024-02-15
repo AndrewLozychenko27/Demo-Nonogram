@@ -1,5 +1,7 @@
 package ua.lozychenko.nonogram.controller;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -19,9 +21,13 @@ import ua.lozychenko.nonogram.constraint.group.SizeGroup;
 import ua.lozychenko.nonogram.constraint.util.ValidationHelper;
 import ua.lozychenko.nonogram.data.entity.Puzzle;
 import ua.lozychenko.nonogram.data.entity.User;
-import ua.lozychenko.nonogram.data.service.CellService;
-import ua.lozychenko.nonogram.data.service.GameService;
-import ua.lozychenko.nonogram.data.service.PuzzleService;
+import ua.lozychenko.nonogram.service.data.CellService;
+import ua.lozychenko.nonogram.service.data.GameService;
+import ua.lozychenko.nonogram.service.data.PuzzleService;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static ua.lozychenko.nonogram.constants.ControllerConstants.BINDING_RESULT;
 
@@ -32,10 +38,17 @@ public class PuzzleController {
     private final CellService cellService;
     private final GameService gameService;
 
-    public PuzzleController(PuzzleService puzzleService, CellService cellService, GameService gameService) {
+    @Value("${pages.puzzle.size.default}")
+    private String pageSizeDefault;
+
+    private final List<Integer> pageSizeRange;
+
+
+    public PuzzleController(PuzzleService puzzleService, CellService cellService, GameService gameService, @Value("${pages.puzzle.size.range}") String pageSizeRange) {
         this.puzzleService = puzzleService;
         this.cellService = cellService;
         this.gameService = gameService;
+        this.pageSizeRange = Arrays.stream(pageSizeRange.split(",")).map(Integer::parseInt).collect(Collectors.toList());
     }
 
     @ModelAttribute
@@ -44,10 +57,16 @@ public class PuzzleController {
     }
 
     @GetMapping("/list")
-    public String puzzles(@PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable,
+    public String puzzles(@PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
                           @AuthenticationPrincipal User user,
                           Model model) {
-        model.addAttribute("puzzles", puzzleService.findAll(user.getId(), pageable));
+        Pageable configuredPageable = pageable;
+
+        if (pageSizeRange.stream().noneMatch(size -> size == pageable.getPageSize())) {
+            configuredPageable = PageRequest.of(pageable.getPageNumber(), Integer.parseInt(pageSizeDefault), pageable.getSort());
+        }
+        model.addAttribute("sizes", pageSizeRange);
+        model.addAttribute("puzzles", puzzleService.findAll(user.getId(), configuredPageable));
 
         return "puzzle-list";
     }
@@ -108,7 +127,7 @@ public class PuzzleController {
     public String play(@PathVariable("puzzle_id") Puzzle puzzle,
                        Model model) {
         model.addAttribute("puzzle", puzzle);
-        model.addAttribute("hints", puzzleService.generateHints(puzzle));
+        model.addAttribute("keys", puzzleService.generateKeys(puzzle));
 
         return "puzzle-play";
     }
@@ -174,5 +193,14 @@ public class PuzzleController {
         }
 
         return view;
+    }
+
+    @PostMapping("/{puzzle_id}/hint")
+    public String hint(@PathVariable("puzzle_id") Puzzle puzzle,
+                       @AuthenticationPrincipal User user,
+                       Model model) {
+        model.addAttribute("hints", gameService.giveHints(puzzle, user));
+
+        return String.format("redirect:/puzzle/%d/play", puzzle.getId());
     }
 }

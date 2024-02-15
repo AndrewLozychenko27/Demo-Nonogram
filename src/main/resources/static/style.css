@@ -21,6 +21,7 @@
 .bg-bamboo-green {
     background-color: #6B9362;
 }
+
 .bg-bamboo-green-light {
     background-color: #8cb382;
 }
@@ -83,5 +84,49 @@
 }
 
 .card-height {
-    height: 180px;
+    height: 220px;
+}
+
+.pagination > li > a,
+.dropdown-toggle > .page-link > a {
+    background-color: white;
+    color: #198754;
+}
+
+.pagination > li > a:focus,
+.pagination > li > a:hover,
+.pagination > li > span:focus,
+.pagination > li > span:hover,
+.dropdown-toggle.page-link:focus,
+.dropdown-toggle.page-link:hover,
+.dropdown-item:hover {
+    color: black !important;
+    background-color: #eee !important;
+    border-color: #ddd !important;
+}
+
+.pagination > .active > a,
+.dropdown-item.active {
+    color: white;
+    background-color: #198754 !important;
+    border: solid 1px #198754 !important;
+}
+
+.pagination > .active > a:hover,
+.dropdown-item.active:hover {
+    background-color: #198754 !important;
+    border: solid 1px #198754 !important;
+}
+
+.active > .page-link {
+    z-index: 1 !important;
+}
+
+.dropdown-menu {
+    z-index: 1 !important;
+    min-width: 4rem !important;
+}
+
+.dropdown-toggle {
+    color: #198754 !important;
 }

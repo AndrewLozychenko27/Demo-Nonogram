@@ -27,7 +27,8 @@
                         </li>
                     </ul>
                     <#if currentUser??>
-                        <a class="inline navbar-brand" href="<@u.path "user/" + currentUser.id + "/profile"/>">${currentUser.nickname}</a>
+                        <a class="inline navbar-brand"
+                           href="<@u.path "user/" + currentUser.id + "/profile"/>">${currentUser.nickname}</a>
                         <@form "logout">
                             <@submit "Log out" "dark"/>
                         </@form>
@@ -100,6 +101,23 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
             crossorigin="anonymous"></script>
+    <script>
+        function doGet(url) {
+            return fetch(url, {method: "GET"});
+        }
+
+        function doPost(url, body) {
+            return fetch(url, {
+                method: "POST",
+                headers: {
+                    Accept: "application/json",
+                    "Content-Type": "application/json",
+                    "X-CSRF-Token": "${_csrf.token}"
+                },
+                body: JSON.stringify(body)
+            });
+        }
+    </script>
     </body>
     </html>
 </#macro>
@@ -223,53 +241,71 @@
     <a class="btn btn-outline-${style}" role="button" href="<@u.path path />">${label}</a>
 </#macro>
 
-<#macro pager url page>
+<#macro pager url page sizes>
+    <#assign
+    number = page.getNumber()
+    size = page.getSize()/>
+
     <nav>
         <ul class="pagination">
-            <#if page.getNumber() gte 3>
-                <li class="page-item"><a class="page-link" href="<@u.path "user/list?page=0"/>">1</a></li>
-                <#if page.getNumber() gt 3>
+            <li class="page-item">
+                <div class="dropdown">
+                    <a class="page-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" role="button">
+                        Size
+                    </a>
+
+                    <ul class="dropdown-menu">
+                        <#list sizes as s>
+                            <li><a class="dropdown-item <#if size == s>active</#if>"
+                                   href="<@u.path url + "?page=0&size=" + s/>">${s}</a></li>
+                        </#list>
+                    </ul>
+                </div>
+            </li>
+            <#if number gte 3>
+                <li class="page-item"><a class="page-link" href="<@u.path url + "?page=0&size=" + size/>">1</a></li>
+                <#if number gt 3>
                     <li class="page-item disabled"><a class="page-link">...</a></li>
                 </#if>
             </#if>
-            <#if page.getNumber() - 1 gte 1>
+            <#if number - 1 gte 1>
                 <li class="page-item"><a class="page-link"
-                                         href="<@u.path "user/list?page=" + (page.getNumber() - 2)/>">${page.getNumber() - 1}</a>
+                                         href="<@u.path url + "?page=" + (number - 2) + "&size=" + size/>">${number - 1}</a>
                 </li>
             </#if>
             <#if page.getNumber() gte 1>
                 <li class="page-item"><a class="page-link"
-                                         href="<@u.path "user/list?page=" + (page.getNumber() - 1)/>">${page.getNumber()}</a>
+                                         href="<@u.path url + "?page=" + (number - 1) + "&size=" + size/>">${number}</a>
                 </li>
             </#if>
-            <li class="page-item active"><a class="page-link">${page.getNumber() + 1}</a></li>
-            <#if page.getNumber() + 1 lt page.getTotalPages()>
+            <li class="page-item active"><a class="page-link">${number + 1}</a></li>
+            <#if number + 1 lt page.getTotalPages()>
                 <li class="page-item"><a class="page-link"
-                                         href="<@u.path "user/list?page=" + (page.getNumber() + 1)/>">${page.getNumber() + 2}</a>
+                                         href="<@u.path url + "?page=" + (number + 1) + "&size=" + size/>">${number + 2}</a>
                 </li>
             </#if>
-            <#if page.getNumber() + 2 lt page.getTotalPages()>
+            <#if number + 2 lt page.getTotalPages()>
                 <li class="page-item"><a class="page-link"
-                                         href="<@u.path "user/list?page=" + (page.getNumber() + 2)/>">${page.getNumber() + 3}</a>
+                                         href="<@u.path url + "?page=" + (number + 2) + "&size=" + size/>">${number + 3}</a>
                 </li>
             </#if>
-            <#if page.getNumber() lt page.getTotalPages() - 3>
-                <#if page.getNumber() lt page.getTotalPages() - 4>
+            <#if number lt page.getTotalPages() - 3>
+                <#if number lt page.getTotalPages() - 4>
                     <li class="page-item disabled"><a class="page-link">...</a></li>
                 </#if>
                 <li class="page-item"><a class="page-link"
-                                         href="<@u.path "user/list?page=" + (page.getTotalPages() - 1)/>">${page.getTotalPages()}</a>
+                                         href="<@u.path url + "?page=" + (page.getTotalPages() - 1) + "&size=" + size/>">${page.getTotalPages()}</a>
                 </li>
             </#if>
         </ul>
     </nav>
 </#macro>
 
-<#macro field puzzle hints="empty" suggestions=[]>
-    <#if hints == "empty">
-        <#assign  showHints=false/>
+<#macro field puzzle keys="empty" suggestions=[]>
+    <#if keys == "empty">
+        <#assign  showKeys=false/>
     <#else>
-        <#assign  showHints=true/>
+        <#assign  showKeys=true/>
     </#if>
 
     <#if suggestions?size == 0>
@@ -285,9 +321,9 @@
                 <th scope="col" class="table-active p-0"></th>
                 <#list 0..<puzzle.width as x>
                     <th scope="col"
-                        class="table-active p-0 <#if !showHints>table-cell</#if> <#if x !=0 && (x + 1) % 5 == 0>b-r</#if> b-b">
-                        <#if showHints>
-                            <#list hints.vertical as col, sequences>
+                        class="table-active p-0 <#if !showKeys>table-cell</#if> <#if x !=0 && (x + 1) % 5 == 0>b-r</#if> b-b">
+                        <#if showKeys>
+                            <#list keys.horizontal as col, sequences>
                                 <#if col == x>
                                     <#list sequences as s>
                                         <p class="text-center mb-0">${s}</p>
@@ -303,10 +339,10 @@
             <#list 0..<puzzle.height as y>
                 <tr>
                     <th scope="row"
-                        class="table-active p-0 <#if !showHints>table-cell</#if> <#if y !=0 && (y + 1) % 5 == 0>b-b</#if> b-r align-middle">
+                        class="table-active p-0 <#if !showKeys>table-cell</#if> <#if y !=0 && (y + 1) % 5 == 0>b-b</#if> b-r align-middle">
                         <p class="text-end mb-0 mx-2">
-                            <#if showHints>
-                                <#list hints.horizontal as row, sequences>
+                            <#if showKeys>
+                                <#list keys.vertical as row, sequences>
                                     <#if row == y>
                                         <#list sequences as s>
                                             ${s}
@@ -319,7 +355,7 @@
                     </th>
                     <#list 0..<puzzle.width as x>
                         <td class="table-cell p-0 <#if x !=0 && (x + 1) % 5 == 0>b-r</#if> <#if y !=0 && (y + 1) % 5 == 0>b-b</#if>">
-                            <input type="checkbox" name="cell" class="cell" value="${y}:${x}"
+                            <input type="checkbox" id="${y}:${x}" name="cell" class="cell" value="${y}:${x}"
                                    <#if isPlaying?? && suggestions?seq_contains(y + ":" + x)>checked</#if>>
                         </td>
                     </#list>

@@ -1,4 +1,5 @@
 <#import "parts/common.ftl" as c/>
+<#import "parts/util.ftl" as u/>
 <#include "parts/security.ftl"/>
 
 <@c.page "Puzzle " + puzzle.name "w-84">
@@ -18,27 +19,89 @@
         <div class="row my-3">
             <h5 class="text-center"><b>${puzzle.name}</b></h5>
         </div>
-        <@c.form "puzzle/" + puzzle.id + "/check">
-            <#if hasGame>
-                <@c.field puzzle hints game.getCellsAsStrings()/>
+        <#if hasGame>
+            <@c.field puzzle keys game.getCellsAsStrings()/>
+        <#else>
+            <@c.field puzzle keys />
+        </#if>
+        <div class="w-25 m-auto mt-3">
+            <#if hasGame && game.state == "SOLVED">
+                <p class="text-success"><b>Congrats! You've solved it!</b></p>
+                <div class="row">
+                    <input type="button" class="btn btn-outline-primary" value="Leave" onclick="leave()">
+                </div>
             <#else>
-                <@c.field puzzle hints />
-            </#if>
-            <div class="w-13 m-auto mt-3">
-                <#if hasGame>
-                    <p class="text-center">Attempts: ${game.attempts}</p>
-                <#else>
-                    <p class="text-center">Attempts: 0</p>
-                </#if>
-                <#if hasGame && game.state == "SOLVED">
-                    <p class="text-success"><b>Congrats! You've solved it!</b></p>
-                    <div class="row">
-                        <@c.link "Leave" "puzzle/list" "primary"/>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <#if hasGame>
+                            <p class="text-center">Hints: ${game.hints}</p>
+                        <#else>
+                            <p class="text-center">Hints: 0</p>
+                        </#if>
                     </div>
-                <#else>
-                    <@c.submitPair "Check" "puzzle/list" "Leave"/>
-                </#if>
-            </div>
-        </@c.form>
+                    <div class="col-sm-6">
+                        <#if hasGame>
+                            <p class="text-center">Attempts: ${game.attempts}</p>
+                        <#else>
+                            <p class="text-center">Attempts: 0</p>
+                        </#if>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6 d-flex flex-row-reverse">
+                        <input type="button" class="btn btn-outline-warning w-100" value="Hint" onclick="hint()">
+                    </div>
+                    <div class="col-sm-6">
+                        <input type="button" class="btn btn-outline-success w-100" value="Check" onclick="check()">
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col">
+                        <input type="button" class="btn btn-outline-danger w-100" value="Leave" onclick="leave()">
+                    </div>
+                </div>
+            </#if>
+        </div>
     </div>
+    <script>
+        function getChecked() {
+            let cells = document.getElementsByName("cell");
+            let checked = [];
+
+            for (let i in cells) {
+                if (cells[i].checked === true) {
+                    checked.push(cells[i].value);
+                }
+            }
+
+            return checked;
+        }
+
+        function check() {
+            doPost('<@u.path "game/" + puzzle.id  + "/check"/>', {
+                cells: getChecked()
+            })
+                .then(() => {
+                    window.location.reload();
+                });
+        }
+
+        function leave() {
+            doPost('<@u.path "game/" + puzzle.id + "/save-state"/>', {
+                cells: getChecked()
+            })
+                .then(() => {
+                    window.location.href = '<@u.path "puzzle/list"/>';
+                });
+        }
+
+        function hint() {
+            doPost('<@u.path "game/" + puzzle.id + "/hint"/>', {
+                cells: getChecked()
+            })
+                .then(() => {
+                    window.location.reload();
+                });
+        }
+    </script>
 </@c.page>

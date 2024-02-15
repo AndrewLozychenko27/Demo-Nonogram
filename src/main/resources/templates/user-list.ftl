@@ -2,7 +2,6 @@
 
 <@c.page "User list">
     <div class="w-75 m-auto">
-        <@c.pager "user/list" users/>
         <div>
             <@c.form "user/list" "GET">
                 <div class="row">
@@ -14,6 +13,9 @@
                     </div>
                 </div>
             </@c.form>
+        </div>
+        <div class="w-30 mx-auto mb-4 d-flex justify-content-center">
+            <@c.pager "user/list" users sizes/>
         </div>
         <table class="table table-bordered">
             <thead class="table-success">
@@ -65,5 +67,8 @@
             </#list>
             </tbody>
         </table>
+        <div class="w-30 mx-auto mt-4 d-flex justify-content-center">
+            <@c.pager "user/list" users sizes/>
+        </div>
     </div>
 </@c.page>

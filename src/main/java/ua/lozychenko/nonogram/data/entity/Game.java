@@ -117,6 +117,10 @@ public class Game {
         cells.add(cell);
     }
 
+    public void addCells(List<Cell> cells) {
+        this.cells.addAll(cells);
+    }
+
     public void clearAndAddCells(List<Cell> cells) {
         this.cells.clear();
         this.cells.addAll(cells);

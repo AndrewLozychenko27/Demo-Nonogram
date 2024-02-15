@@ -4,11 +4,14 @@
 
 <@c.page "Puzzles">
     <div class="w-75 m-auto">
-        <div class="row row-cols-1 row-cols-md-3 g-4">
+        <div class="w-30 mx-auto mb-4 d-flex justify-content-center">
+            <@c.pager "puzzle/list" puzzles sizes/>
+        </div>
+        <div class="row row-cols-1 row-cols-md-3 g-4 my-3">
             <div class="col">
                 <div class="card h-100 d-flex align-items-center justify-content-center border-none">
                     <div class="row m-3">
-                        <a class="btn btn-outline-primary p-3" role="button" href="<@u.path "puzzle/create"/>">Create
+                        <a class="btn btn-outline-success p-3" role="button" href="<@u.path "puzzle/create"/>">Create
                             puzzle</a>
                     </div>
                 </div>
@@ -49,6 +52,7 @@
                                 <p class="card-text">Cells: ${puzzle.cells?size}</p>
                                 <#if hasGame>
                                     <p class="card-text">Attempts: ${game.attempts}</p>
+                                    <p class="card-text">Hints: ${game.hints}</p>
                                 </#if>
                             </#if>
                         </div>
@@ -65,10 +69,10 @@
                                 </#if>
                             <#elseif puzzle.user.id == currentUser.id>
                                 <div class="row m-2">
-                                        <a class="btn btn-outline-primary mb-2" role="button"
-                                           href="<@u.path "puzzle/" + puzzle.id + "/edit"/>">Edit</a>
-                                        <a class="btn btn-outline-danger" role="button"
-                                           href="<@u.path "puzzle/" + puzzle.id + "/delete"/>">Delete</a>
+                                    <a class="btn btn-outline-primary mb-2" role="button"
+                                       href="<@u.path "puzzle/" + puzzle.id + "/edit"/>">Edit</a>
+                                    <a class="btn btn-outline-danger" role="button"
+                                       href="<@u.path "puzzle/" + puzzle.id + "/delete"/>">Delete</a>
                                 </div>
                             <#else>
                                 <div class="row m-2">
@@ -91,6 +95,9 @@
                     </div>
                 </div>
             </#list>
+        </div>
+        <div class="w-30 mx-auto my-4 pt-4 d-flex justify-content-center">
+            <@c.pager "puzzle/list" puzzles sizes/>
         </div>
     </div>
 </@c.page>

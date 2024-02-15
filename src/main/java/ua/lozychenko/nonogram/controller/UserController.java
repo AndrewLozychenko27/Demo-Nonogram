@@ -1,6 +1,8 @@
 package ua.lozychenko.nonogram.controller;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -20,24 +22,32 @@ import ua.lozychenko.nonogram.constraint.group.PasswordGroup;
 import ua.lozychenko.nonogram.constraint.util.ValidationHelper;
 import ua.lozychenko.nonogram.data.entity.Role;
 import ua.lozychenko.nonogram.data.entity.User;
-import ua.lozychenko.nonogram.data.service.UserService;
+import ua.lozychenko.nonogram.service.data.UserService;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static ua.lozychenko.nonogram.constants.ControllerConstants.BINDING_RESULT;
 
 @Controller
 @RequestMapping("/user")
 public class UserController {
-    public static final String BINDING_RESULT_EDIT_FORM = BINDING_RESULT + "userEditForm";
     public static final String BINDING_RESULT_USER = BINDING_RESULT + "user";
     private final UserService userService;
 
-    public UserController(UserService userService) {
+    @Value("${pages.user.size.default}")
+    private String pageSizeDefault;
+
+    private final List<Integer> pageSizeRange;
+
+    public UserController(UserService userService, @Value("${pages.user.size.range}") String pageSizeRange) {
         this.userService = userService;
+        this.pageSizeRange = Arrays.stream(pageSizeRange.split(",")).map(Integer::parseInt).collect(Collectors.toList());
     }
 
     @ModelAttribute
@@ -163,13 +173,19 @@ public class UserController {
                         Optional<String> nickname,
                         Model model) {
         Page<User> users;
+        Pageable configuredPageable = pageable;
+
+        if (pageSizeRange.stream().noneMatch(size -> size == pageable.getPageSize())) {
+            configuredPageable = PageRequest.of(pageable.getPageNumber(), Integer.parseInt(pageSizeDefault), pageable.getSort());
+        }
 
         if (nickname.isPresent()) {
-            users = userService.findAll(nickname.get(), pageable);
+            users = userService.findAll(nickname.get(), configuredPageable);
         } else {
-            users = userService.findAll(pageable);
+            users = userService.findAll(configuredPageable);
         }
         model.addAttribute("users", users);
+        model.addAttribute("sizes", pageSizeRange);
 
         return "user-list";
     }
