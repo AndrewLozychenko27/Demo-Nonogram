@@ -20,21 +20,23 @@
             <h5 class="text-center"><b>${puzzle.name}</b></h5>
         </div>
         <#if hasGame>
-            <@c.field puzzle keys game.getCellsAsStrings()/>
+            <@c.field puzzle keys game.getCellsAsStrings() game.state == "SOLVED"/>
         <#else>
             <@c.field puzzle keys />
         </#if>
-        <div class="w-25 m-auto mt-3">
-            <#if hasGame && game.state == "SOLVED">
+        <#if hasGame && game.state == "SOLVED">
+            <div class="w-13 m-auto mt-3">
                 <p class="text-success"><b>Congrats! You've solved it!</b></p>
                 <div class="row">
                     <input type="button" class="btn btn-outline-primary" value="Leave" onclick="leave()">
                 </div>
-            <#else>
+            </div>
+        <#else>
+            <div class="w-25 m-auto mt-3">
                 <div class="row">
                     <div class="col-sm-6">
                         <#if hasGame>
-                            <p class="text-center">Hints: ${game.hints}</p>
+                            <p class="text-center">Hints: ${game.getHintsCount()}%</p>
                         <#else>
                             <p class="text-center">Hints: 0</p>
                         </#if>
@@ -60,8 +62,8 @@
                         <input type="button" class="btn btn-outline-danger w-100" value="Leave" onclick="leave()">
                     </div>
                 </div>
-            </#if>
-        </div>
+            </div>
+        </#if>
     </div>
     <script>
         function getChecked() {

@@ -52,7 +52,7 @@
                                 <p class="card-text">Cells: ${puzzle.cells?size}</p>
                                 <#if hasGame>
                                     <p class="card-text">Attempts: ${game.attempts}</p>
-                                    <p class="card-text">Hints: ${game.hints}</p>
+                                    <p class="card-text">Hints: ${game.getHintsCount()}%</p>
                                 </#if>
                             </#if>
                         </div>
