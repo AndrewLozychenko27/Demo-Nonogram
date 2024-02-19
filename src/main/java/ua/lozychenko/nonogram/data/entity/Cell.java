@@ -25,6 +25,11 @@ public class Cell {
         this.y = (short) y;
     }
 
+    public Cell(Short x, Short y) {
+        this.x = x;
+        this.y = y;
+    }
+
     public Long getId() {
         return id;
     }
