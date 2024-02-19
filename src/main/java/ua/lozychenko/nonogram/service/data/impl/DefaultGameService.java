@@ -64,23 +64,29 @@ public class DefaultGameService extends DefaultBaseService<Game> implements Game
         Game game = createIfNotPlayed(puzzle, user);
         List<Cell> hints = new LinkedList<>();
         Random random = new Random();
+        int hintsCount;
+        List<Cell> toCheck = new ArrayList<>();
 
         List<Cell> cells = puzzle.getCells().stream()
                 .filter(cell -> !game.getCells().contains(cell))
                 .toList();
 
-        int hintsCount = (int) (puzzle.getCells().size() * threshold);
-        if (hintsCount < minHintsCount) {
-            hintsCount = minHintsCount;
+        if (!cells.isEmpty()) {
+            hintsCount = (int) (puzzle.getCells().size() * threshold);
+            if (hintsCount < minHintsCount) {
+                hintsCount = minHintsCount;
+            }
+
+            IntStream.range(0, hintsCount).forEach(i -> {
+                hints.add(cells.get(random.nextInt(cells.size())));
+            });
+
+            game.addHints(hints);
+            repo.save(game);
         }
-
-        IntStream.range(0, hintsCount).forEach(i -> {
-            hints.add(cells.get(random.nextInt(cells.size())));
-        });
-
-        game.addCells(hints);
-        game.setHints(game.getHints() + 1);
-        check(puzzle, user, new ArrayList<>(game.getCells()), true);
+        toCheck.addAll(game.getCells());
+        toCheck.addAll(hints);
+        check(puzzle, user, toCheck, true);
 
         return hints;
     }

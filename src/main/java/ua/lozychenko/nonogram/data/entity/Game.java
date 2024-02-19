@@ -24,8 +24,6 @@ public class Game {
 
     private Integer attempts;
 
-    private Integer hints;
-
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
@@ -42,6 +40,14 @@ public class Game {
     )
     private List<Cell> cells;
 
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @JoinTable(
+            name = "hint",
+            joinColumns = @JoinColumn(name = "game_id"),
+            inverseJoinColumns = @JoinColumn(name = "cell_id")
+    )
+    private List<Cell> hints;
+
     @Enumerated(EnumType.STRING)
     private State state;
 
@@ -52,8 +58,8 @@ public class Game {
         this.puzzle = puzzle;
         this.user = user;
         this.attempts = 0;
-        this.hints = 0;
         this.cells = new ArrayList<>();
+        this.hints = new ArrayList<>();
         this.state = State.IN_PROGRESS;
     }
 
@@ -71,14 +77,6 @@ public class Game {
 
     public void setAttempts(Integer attempts) {
         this.attempts = attempts;
-    }
-
-    public Integer getHints() {
-        return hints;
-    }
-
-    public void setHints(Integer hints) {
-        this.hints = hints;
     }
 
     public User getUser() {
@@ -105,6 +103,14 @@ public class Game {
         this.cells = cells;
     }
 
+    public List<Cell> getHints() {
+        return hints;
+    }
+
+    public void setHints(List<Cell> hints) {
+        this.hints = hints;
+    }
+
     public State getState() {
         return state;
     }
@@ -121,6 +127,10 @@ public class Game {
         this.cells.addAll(cells);
     }
 
+    public void addHints(List<Cell> hints) {
+        this.hints.addAll(hints);
+    }
+
     public void clearAndAddCells(List<Cell> cells) {
         this.cells.clear();
         this.cells.addAll(cells);
@@ -128,7 +138,11 @@ public class Game {
 
     public String[] getCellsAsStrings() {
         return cells.stream()
-                .map(cell -> String.format("%d:%d", cell.getX(), cell.getY()))
+                .map(cell -> String.format("%d:%d%s", cell.getX(), cell.getY(), hints.contains(cell) ? " hint" : ""))
                 .toList().toArray(String[]::new);
+    }
+
+    public int getHintsCount() {
+        return (int) ((hints.size() * 100.0f) / puzzle.getCells().size());
     }
 }
