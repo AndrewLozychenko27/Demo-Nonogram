@@ -1,4 +1,5 @@
 <#import "parts/common.ftl" as c/>
+<#import "parts/puzzle.ftl" as pz/>
 <#import "parts/util.ftl" as u/>
 <#include "parts/security.ftl"/>
 
@@ -20,9 +21,9 @@
             <h5 class="text-center"><b>${puzzle.name}</b></h5>
         </div>
         <#if hasGame>
-            <@c.field puzzle keys game.getCellsAsStrings() game.state == "SOLVED"/>
+            <@pz.field puzzle keys game.getCellsAsStrings() game.state == "SOLVED"/>
         <#else>
-            <@c.field puzzle keys />
+            <@pz.field puzzle keys />
         </#if>
         <#if hasGame && game.state == "SOLVED">
             <div class="w-13 m-auto mt-3">

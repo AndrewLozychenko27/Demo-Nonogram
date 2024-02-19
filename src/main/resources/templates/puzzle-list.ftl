@@ -1,11 +1,12 @@
 <#import "parts/common.ftl" as c/>
+<#import "parts/pager.ftl" as pg/>
 <#import "parts/util.ftl" as u/>
 <#include "parts/security.ftl"/>
 
 <@c.page "Puzzles">
     <div class="w-75 m-auto">
         <div class="w-30 mx-auto mb-4 d-flex justify-content-center">
-            <@c.pager "puzzle/list" puzzles sizes/>
+            <@pg.pager "puzzle/list" puzzles sizes/>
         </div>
         <div class="row row-cols-1 row-cols-md-3 g-4 my-3">
             <div class="col">
@@ -97,7 +98,7 @@
             </#list>
         </div>
         <div class="w-30 mx-auto my-4 pt-4 d-flex justify-content-center">
-            <@c.pager "puzzle/list" puzzles sizes/>
+            <@pg.pager "puzzle/list" puzzles sizes/>
         </div>
     </div>
 </@c.page>

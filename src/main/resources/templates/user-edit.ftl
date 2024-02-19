@@ -1,16 +1,17 @@
 <#import "parts/common.ftl" as c/>
+<#import "parts/form.ftl" as f/>
 
 <@c.page "Edit profile">
     <div class="w-30 m-auto">
-        <@c.formBody "Edit">
-            <@c.form "user/" + user.id + "/edit">
-                <@c.hidden "id" user.id/>
-                <@c.bind "user.email"/>
-                <@c.inputValid "Email" "email"><#if changes??>${changes.email}<#else>${user.email}</#if></@c.inputValid>
-                <@c.bind "user.nickname"/>
-                <@c.inputValid "Nickname" "nickname"><#if changes??>${changes.nickname}<#else>${user.nickname}</#if></@c.inputValid>
-                <@c.submitPair "Save" "user/" + user.id + "/profile"/>
-            </@c.form>
-        </@c.formBody>
+        <@f.formBody "Edit">
+            <@f.form "user/" + user.id + "/edit">
+                <@f.hidden "id" user.id/>
+                <@f.bind "user.email"/>
+                <@f.inputValid "Email" "email"><#if changes??>${changes.email}<#else>${user.email}</#if></@f.inputValid>
+                <@f.bind "user.nickname"/>
+                <@f.inputValid "Nickname" "nickname"><#if changes??>${changes.nickname}<#else>${user.nickname}</#if></@f.inputValid>
+                <@f.submitPair "Save" "user/" + user.id + "/profile"/>
+            </@f.form>
+        </@f.formBody>
     </div>
 </@c.page>

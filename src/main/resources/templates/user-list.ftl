@@ -1,21 +1,23 @@
 <#import "parts/common.ftl" as c/>
+<#import "parts/form.ftl" as f/>
+<#import "parts/pager.ftl" as pg/>
 
 <@c.page "User list">
     <div class="w-75 m-auto">
         <div>
-            <@c.form "user/list" "GET">
+            <@f.form "user/list" "GET">
                 <div class="row">
                     <div class="col-auto">
-                        <@c.input "Nickname" "nickname"/>
+                        <@f.input "Nickname" "nickname"/>
                     </div>
                     <div class="col-auto">
-                        <@c.submit "Search" "primary"/>
+                        <@f.submit "Search" "primary"/>
                     </div>
                 </div>
-            </@c.form>
+            </@f.form>
         </div>
         <div class="w-30 mx-auto mb-4 d-flex justify-content-center">
-            <@c.pager "user/list" users sizes/>
+            <@pg.pager "user/list" users sizes/>
         </div>
         <table class="table table-bordered">
             <thead class="table-success">
@@ -38,37 +40,37 @@
                     <td>${user.role}</td>
                     <td>${user.isActivated()?string('Activated', 'Blocked')}</td>
                     <td>
-                        <@c.form "user/change-role">
-                            <@c.hidden "userId" user.id/>
-                            <@c.hidden "page" users.getNumber()/>
+                        <@f.form "user/change-role">
+                            <@f.hidden "userId" user.id/>
+                            <@f.hidden "page" users.getNumber()/>
                             <#if user.role == "ADMIN">
-                                <@c.hidden "role" "PLAYER"/>
-                                <@c.submit "Make player" "warning"/>
+                                <@f.hidden "role" "PLAYER"/>
+                                <@f.submit "Make player" "warning"/>
                             <#else>
-                                <@c.hidden "role" "ADMIN"/>
-                                <@c.submit "Make admin" "warning"/>
+                                <@f.hidden "role" "ADMIN"/>
+                                <@f.submit "Make admin" "warning"/>
                             </#if>
-                        </@c.form>
+                        </@f.form>
                     </td>
                     <td>
-                        <@c.form "user/change-status">
-                            <@c.hidden "userId" user.id/>
-                            <@c.hidden "page" users.getNumber()/>
+                        <@f.form "user/change-status">
+                            <@f.hidden "userId" user.id/>
+                            <@f.hidden "page" users.getNumber()/>
                             <#if user.isActivated()>
-                                <@c.hidden "status" "false"/>
-                                <@c.submit "   Block    " "danger"/>
+                                <@f.hidden "status" "false"/>
+                                <@f.submit "   Block    " "danger"/>
                             <#else>
-                                <@c.hidden "status" "true"/>
-                                <@c.submit "Activate" "success"/>
+                                <@f.hidden "status" "true"/>
+                                <@f.submit "Activate" "success"/>
                             </#if>
-                        </@c.form>
+                        </@f.form>
                     </td>
                 </tr>
             </#list>
             </tbody>
         </table>
         <div class="w-30 mx-auto mt-4 d-flex justify-content-center">
-            <@c.pager "user/list" users sizes/>
+            <@pg.pager "user/list" users sizes/>
         </div>
     </div>
 </@c.page>
