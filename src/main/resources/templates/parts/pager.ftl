@@ -1,3 +1,5 @@
+<#import "util.ftl" as u/>
+
 <#macro pager url page sizes>
     <#assign
     number = page.getNumber()
