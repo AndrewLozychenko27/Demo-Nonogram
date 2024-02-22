@@ -1,4 +1,7 @@
-<#if Session?? && Session.SPRING_SECURITY_CONTEXT??>
+<#if SPRING_SECURITY_CONTEXT?? && SPRING_SECURITY_CONTEXT.authentication.principal.id??>
     <#assign
-    currentUser = Session.SPRING_SECURITY_CONTEXT.authentication.principal />
+    currentUser = SPRING_SECURITY_CONTEXT.authentication.principal />
+<#elseif oauthUser??>
+    <#assign
+    currentUser = oauthUser/>
 </#if>
