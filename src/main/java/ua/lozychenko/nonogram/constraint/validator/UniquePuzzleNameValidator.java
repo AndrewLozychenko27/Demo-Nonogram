@@ -4,8 +4,8 @@ import ua.lozychenko.nonogram.constraint.UniquePuzzleName;
 import ua.lozychenko.nonogram.data.entity.Puzzle;
 import ua.lozychenko.nonogram.service.data.PuzzleService;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import java.util.Optional;
 
 public class UniquePuzzleNameValidator implements ConstraintValidator<UniquePuzzleName, Puzzle> {

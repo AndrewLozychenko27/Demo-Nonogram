@@ -2,8 +2,8 @@ package ua.lozychenko.nonogram.constraint.validator;
 
 import ua.lozychenko.nonogram.constraint.StrongPassword;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 public class StrongPasswordValidator implements ConstraintValidator<StrongPassword, String> {
     public static final String MESSAGE_TEMPLATE = "Password must contain at least 2 %s";

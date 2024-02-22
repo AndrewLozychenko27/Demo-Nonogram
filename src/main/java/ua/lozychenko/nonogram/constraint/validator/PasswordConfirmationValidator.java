@@ -3,8 +3,8 @@ package ua.lozychenko.nonogram.constraint.validator;
 import ua.lozychenko.nonogram.constraint.PasswordConfirmation;
 import ua.lozychenko.nonogram.data.entity.User;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 public class PasswordConfirmationValidator implements ConstraintValidator<PasswordConfirmation, User> {
     @Override
