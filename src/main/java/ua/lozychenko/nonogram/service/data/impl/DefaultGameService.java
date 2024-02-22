@@ -1,7 +1,7 @@
 package ua.lozychenko.nonogram.service.data.impl;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import ua.lozychenko.nonogram.config.property.GameProperty;
 import ua.lozychenko.nonogram.data.entity.Cell;
 import ua.lozychenko.nonogram.data.entity.Game;
 import ua.lozychenko.nonogram.data.entity.Puzzle;
@@ -18,16 +18,14 @@ import java.util.stream.IntStream;
 
 @Service
 public class DefaultGameService extends DefaultBaseService<Game> implements GameService {
-    @Value("${game.hints.threshold}")
-    private Double threshold;
 
-    @Value("${game.hints.min}")
-    private Integer minHintsCount;
+    private final GameProperty property;
 
     private final GameRepo repo;
 
-    public DefaultGameService(GameRepo repo) {
+    public DefaultGameService(GameProperty property, GameRepo repo) {
         super(repo);
+        this.property = property;
         this.repo = repo;
     }
 
@@ -72,9 +70,9 @@ public class DefaultGameService extends DefaultBaseService<Game> implements Game
                 .toList();
 
         if (!cells.isEmpty()) {
-            hintsCount = (int) (puzzle.getCells().size() * threshold);
-            if (hintsCount < minHintsCount) {
-                hintsCount = minHintsCount;
+            hintsCount = (int) (puzzle.getCells().size() * property.getHint().getThreshold());
+            if (hintsCount < property.getHint().getMin()) {
+                hintsCount = property.getHint().getMin();
             }
 
             IntStream.range(0, hintsCount).forEach(i -> {

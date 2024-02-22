@@ -1,11 +1,10 @@
 package ua.lozychenko.nonogram.controller;
 
-import org.springframework.beans.factory.annotation.Value;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -16,9 +15,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import ua.lozychenko.nonogram.config.property.PagesProperty;
 import ua.lozychenko.nonogram.constraint.group.NameGroup;
 import ua.lozychenko.nonogram.constraint.group.SizeGroup;
 import ua.lozychenko.nonogram.constraint.util.ValidationHelper;
+import ua.lozychenko.nonogram.controller.util.ControllerHelper;
 import ua.lozychenko.nonogram.data.entity.Puzzle;
 import ua.lozychenko.nonogram.data.entity.User;
 import ua.lozychenko.nonogram.service.data.CellService;
@@ -26,29 +27,22 @@ import ua.lozychenko.nonogram.service.data.GameService;
 import ua.lozychenko.nonogram.service.data.PuzzleService;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static ua.lozychenko.nonogram.constants.ControllerConstants.BINDING_RESULT;
 
 @Controller
 @RequestMapping("/puzzle")
 public class PuzzleController {
+    private final PagesProperty properties;
     private final PuzzleService puzzleService;
     private final CellService cellService;
     private final GameService gameService;
 
-    @Value("${pages.puzzle.size.default}")
-    private String pageSizeDefault;
-
-    private final List<Integer> pageSizeRange;
-
-
-    public PuzzleController(PuzzleService puzzleService, CellService cellService, GameService gameService, @Value("${pages.puzzle.size.range}") String pageSizeRange) {
+    public PuzzleController(PagesProperty properties, PuzzleService puzzleService, CellService cellService, GameService gameService) {
+        this.properties = properties;
         this.puzzleService = puzzleService;
         this.cellService = cellService;
         this.gameService = gameService;
-        this.pageSizeRange = Arrays.stream(pageSizeRange.split(",")).map(Integer::parseInt).collect(Collectors.toList());
     }
 
     @ModelAttribute
@@ -58,14 +52,15 @@ public class PuzzleController {
 
     @GetMapping("/list")
     public String puzzles(@PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
-                          @AuthenticationPrincipal User user,
+                          HttpSession session,
                           Model model) {
+        User user = ControllerHelper.getCurrentUser(session);
         Pageable configuredPageable = pageable;
 
-        if (pageSizeRange.stream().noneMatch(size -> size == pageable.getPageSize())) {
-            configuredPageable = PageRequest.of(pageable.getPageNumber(), Integer.parseInt(pageSizeDefault), pageable.getSort());
+        if (Arrays.stream(properties.getPuzzle().getSizeRange()).noneMatch(size -> size == pageable.getPageSize())) {
+            configuredPageable = PageRequest.of(pageable.getPageNumber(), properties.getPuzzle().getDefaultSize(), pageable.getSort());
         }
-        model.addAttribute("sizes", pageSizeRange);
+        model.addAttribute("sizes", properties.getPuzzle().getSizeRange());
         model.addAttribute("puzzles", puzzleService.findAll(user.getId(), configuredPageable));
 
         return "puzzle-list";
@@ -79,9 +74,10 @@ public class PuzzleController {
     @PostMapping("/create")
     public String createPuzzle(@Validated({NameGroup.class, SizeGroup.class}) Puzzle puzzle,
                                BindingResult result,
-                               @AuthenticationPrincipal User user,
+                               HttpSession session,
                                Model model) {
         String view;
+        User user = ControllerHelper.getCurrentUser(session);
 
         if (result.hasErrors()) {
             model.addAttribute("puzzle", puzzle);
@@ -162,8 +158,10 @@ public class PuzzleController {
 
     @PostMapping("/{puzzle_id}/check")
     public String check(@PathVariable("puzzle_id") Puzzle puzzle,
-                        @AuthenticationPrincipal User user,
+                        HttpSession session,
                         @RequestParam(name = "cell") String[] coordinates) {
+        User user = ControllerHelper.getCurrentUser(session);
+
         gameService.check(puzzle, user, cellService.parseCells(coordinates));
 
         return String.format("redirect:/puzzle/%d/play", puzzle.getId());
@@ -197,8 +195,10 @@ public class PuzzleController {
 
     @PostMapping("/{puzzle_id}/hint")
     public String hint(@PathVariable("puzzle_id") Puzzle puzzle,
-                       @AuthenticationPrincipal User user,
+                       HttpSession session,
                        Model model) {
+        User user = ControllerHelper.getCurrentUser(session);
+
         model.addAttribute("hints", gameService.giveHints(puzzle, user));
 
         return String.format("redirect:/puzzle/%d/play", puzzle.getId());
