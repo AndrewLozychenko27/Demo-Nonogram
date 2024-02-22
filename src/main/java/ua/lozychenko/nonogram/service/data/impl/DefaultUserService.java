@@ -7,7 +7,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import ua.lozychenko.nonogram.data.entity.Role;
 import ua.lozychenko.nonogram.data.entity.User;
 import ua.lozychenko.nonogram.data.repo.UserRepo;
 import ua.lozychenko.nonogram.service.data.UserService;
@@ -28,7 +27,6 @@ public class DefaultUserService extends DefaultBaseService<User> implements User
     @Override
     public User save(User user) {
         user.setActivated(true);
-        user.setRole(Role.PLAYER);
         user.setPassword(encoder.encode(user.getPassword()));
 
         return super.save(user);
