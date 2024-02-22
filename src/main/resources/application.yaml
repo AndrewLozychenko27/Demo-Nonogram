@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/nonogram
+    username: postgres
+    password: qwe123
+  jpa:
+    generate-ddl: false
+    show-sql: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        enable_lazy_load_no_trans: true
+      javax:
+        persistence:
+          validation:
+            mode: none
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 155368403678-kud1qdd2k4e1rn4ql6npuc21414a63nh.apps.googleusercontent.com
+            client-secret: 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
+            scope: openid,email,profile
