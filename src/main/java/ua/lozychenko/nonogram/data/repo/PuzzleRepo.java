@@ -14,6 +14,6 @@ import java.util.Optional;
 public interface PuzzleRepo extends JpaRepository<Puzzle, Long> {
     Optional<Puzzle> findByName(String name);
 
-    @Query("FROM Puzzle p WHERE p.visible = true AND (p.user.id = :user_id OR p.cells.size > 0)")
+    @Query("FROM Puzzle p WHERE p.visible = true AND (p.user.id = :user_id OR p.cells IS NOT EMPTY)")
     Page<Puzzle> findAllVisibleForUser(@Param("user_id") Long userId, Pageable pageable);
 }
