@@ -27,15 +27,6 @@
                         <li class="nav-item">
                         </li>
                     </ul>
-                    <#if currentUser??>
-                        <a class="inline navbar-brand"
-                           href="<@u.path "user/" + currentUser.id + "/profile"/>">${currentUser.nickname}</a>
-                        <@f.form "logout">
-                            <@f.submit "Log out" "dark"/>
-                        </@f.form>
-                    <#else>
-                        <@u.link "Sign in" "login" "dark"/>
-                    </#if>
                 </div>
             </div>
         </nav>
@@ -49,14 +40,16 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <#if currentUser??>
-                            <#if currentUser.role == "ADMIN">
+                    <#if currentUser??>
+                        <#if currentUser.role == "ADMIN">
+                            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                                 <li class="nav-item">
                                     <a class="nav-link active" aria-current="page"
                                        href="<@u.path "user/list"/>">Users</a>
                                 </li>
-                            <#else>
+                            </ul>
+                        <#else>
+                            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                                 <li class="nav-item">
                                     <a class="nav-link active" aria-current="page" href="#">My games</a>
                                 </li>
@@ -66,13 +59,21 @@
                                 <li class="nav-item">
                                     <a class="nav-link disabled" aria-disabled="true">Disabled</a>
                                 </li>
-                            </#if>
-                        <#else>
+                            </ul>
+                        </#if>
+                        <a class="inline navbar-brand"
+                           href="<@u.path "user/" + currentUser.id + "/profile"/>">${currentUser.nickname}</a>
+                        <@f.form "logout">
+                            <@f.submit "Log out" "dark"/>
+                        </@f.form>
+                    <#else>
+                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                             <li class="nav-item">
                                 <a class="nav-link active" aria-current="page" href="#">How to play</a>
                             </li>
-                        </#if>
-                    </ul>
+                        </ul>
+                        <@u.link "Sign in" "login" "dark"/>
+                    </#if>
                 </div>
             </div>
         </nav>

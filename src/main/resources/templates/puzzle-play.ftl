@@ -27,6 +27,14 @@
         </#if>
         <#if hasGame && game.state == "SOLVED">
             <div class="w-13 m-auto mt-3">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <p class="text-center">Hints: ${game.getHintsCount()}%</p>
+                    </div>
+                    <div class="col-sm-6">
+                        <p class="text-center">Attempts: ${game.attempts}</p>
+                    </div>
+                </div>
                 <p class="text-success"><b>Congrats! You've solved it!</b></p>
                 <div class="row">
                     <input type="button" class="btn btn-outline-primary" value="Leave" onclick="leave()">
