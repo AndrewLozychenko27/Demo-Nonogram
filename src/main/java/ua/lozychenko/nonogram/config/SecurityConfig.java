@@ -6,18 +6,24 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.oauth2.client.registration.ClientRegistration;
+import org.springframework.security.oauth2.core.AuthorizationGrantType;
+import org.springframework.security.oauth2.core.oidc.IdTokenClaimNames;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.expression.DefaultHttpSecurityExpressionHandler;
 import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import ua.lozychenko.nonogram.config.property.OAuth2Property;
 import ua.lozychenko.nonogram.data.entity.Role;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+    private final OAuth2Property oAuth2Property;
     private final ApplicationContext applicationContext;
 
-    public SecurityConfig(ApplicationContext applicationContext) {
+    public SecurityConfig(OAuth2Property oAuth2Property, ApplicationContext applicationContext) {
+        this.oAuth2Property = oAuth2Property;
         this.applicationContext = applicationContext;
     }
 
@@ -94,6 +100,9 @@ public class SecurityConfig {
                         oauth
                                 .loginPage("/login")
                                 .defaultSuccessUrl("/oauth/success")
+                                .clientRegistrationRepository(registrationId ->
+                                        getGoogleClientRegistration(registrationId, oAuth2Property.getClientId(), oAuth2Property.getClientSecret(), oAuth2Property.getScopes())
+                                )
                 )
                 .logout(logout ->
                         logout
@@ -107,6 +116,23 @@ public class SecurityConfig {
                                 .securityContextRepository(new HttpSessionSecurityContextRepository()));
 
         return http.build();
+    }
+
+    private ClientRegistration getGoogleClientRegistration(String registrationId, String clientId, String clientSecret, String[] scopes) {
+        return ClientRegistration
+                .withRegistrationId(registrationId)
+                .clientId(clientId)
+                .clientSecret(clientSecret)
+                .scope(scopes)
+                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+                .authorizationUri("https://accounts.google.com/o/oauth2/v2/auth")
+                .redirectUri("{baseUrl}/login/oauth2/code/{registrationId}")
+                .tokenUri("https://www.googleapis.com/oauth2/v4/token")
+                .userInfoUri("https://www.googleapis.com/oauth2/v3/userinfo")
+                .userNameAttributeName(IdTokenClaimNames.SUB)
+                .jwkSetUri("https://www.googleapis.com/oauth2/v3/certs")
+                .clientName("Google")
+                .build();
     }
 
     private WebExpressionAuthorizationManager processExpression(final String expression) {
