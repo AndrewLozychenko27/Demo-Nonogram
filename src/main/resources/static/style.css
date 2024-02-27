@@ -30,6 +30,22 @@
     background-color: #C59C60;
 }
 
+tr.bg-gold th, tr.bg-gold td {
+    background-color: #ffd700;
+}
+
+tr.bg-silver th, tr.bg-silver td {
+    background-color: #c0c0c0;
+}
+
+tr.bg-bronze th, tr.bg-bronze td {
+    background-color: #cd7f32;
+}
+
+tr.me th, tr.me td {
+    border: solid 2px black;
+}
+
 .fixed-top-on-scroll {
     position: sticky;
     top: 0;
