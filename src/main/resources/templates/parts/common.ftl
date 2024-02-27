@@ -57,7 +57,7 @@
                                     <a class="nav-link" href="<@u.path "puzzle/list"/>">Puzzles</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link disabled" aria-disabled="true">Disabled</a>
+                                    <a class="nav-link" href="<@u.path "game/leaders"/>">Leaderboard</a>
                                 </li>
                             </ul>
                         </#if>

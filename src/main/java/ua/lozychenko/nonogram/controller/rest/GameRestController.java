@@ -2,7 +2,6 @@ package ua.lozychenko.nonogram.controller.rest;
 
 
 import jakarta.servlet.http.HttpSession;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,7 +14,7 @@ import ua.lozychenko.nonogram.service.data.CellService;
 import ua.lozychenko.nonogram.service.data.GameService;
 
 @RestController
-@RequestMapping("/game")
+@RequestMapping("/api/game")
 public class GameRestController {
     private final GameService gameService;
     private final CellService cellService;
@@ -49,8 +48,7 @@ public class GameRestController {
                      @RequestBody Cells cells) {
         User user = ControllerHelper.getCurrentUser(session);
 
-        gameService.save(puzzle, user, cellService.parseCells(cells.getCells()));
-        gameService.giveHints(puzzle, user);
+        gameService.giveHints(puzzle, user, cellService.parseCells(cells.getCells()));
     }
 
     private static class Cells {

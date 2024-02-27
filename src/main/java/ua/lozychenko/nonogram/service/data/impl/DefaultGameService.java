@@ -1,5 +1,7 @@
 package ua.lozychenko.nonogram.service.data.impl;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ua.lozychenko.nonogram.config.property.GameProperty;
 import ua.lozychenko.nonogram.data.entity.Cell;
@@ -7,10 +9,12 @@ import ua.lozychenko.nonogram.data.entity.Game;
 import ua.lozychenko.nonogram.data.entity.Puzzle;
 import ua.lozychenko.nonogram.data.entity.State;
 import ua.lozychenko.nonogram.data.entity.User;
+import ua.lozychenko.nonogram.data.entity.util.GameStats;
 import ua.lozychenko.nonogram.data.repo.GameRepo;
 import ua.lozychenko.nonogram.service.data.GameService;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -58,25 +62,26 @@ public class DefaultGameService extends DefaultBaseService<Game> implements Game
     }
 
     @Override
-    public List<Cell> giveHints(Puzzle puzzle, User user) {
+    public List<Cell> giveHints(Puzzle puzzle, User user, List<Cell> cells) {
         Game game = createIfNotPlayed(puzzle, user);
         List<Cell> hints = new LinkedList<>();
         Random random = new Random();
         int hintsCount;
         List<Cell> toCheck = new ArrayList<>();
+        List<Cell> cellsToHint;
+        boolean isAttemptCounts = new HashSet<>(game.getCells()).containsAll(cells) && new HashSet<>(cells).containsAll(game.getCells());
 
-        List<Cell> cells = puzzle.getCells().stream()
-                .filter(cell -> !game.getCells().contains(cell))
-                .toList();
+        game = save(puzzle, user, cells);
+        cellsToHint = getCellsToHint(puzzle, game);
 
-        if (!cells.isEmpty()) {
+        if (!cellsToHint.isEmpty()) {
             hintsCount = (int) (puzzle.getCells().size() * property.getHint().getThreshold());
             if (hintsCount < property.getHint().getMin()) {
                 hintsCount = property.getHint().getMin();
             }
 
             IntStream.range(0, hintsCount).forEach(i -> {
-                hints.add(cells.get(random.nextInt(cells.size())));
+                hints.add(cellsToHint.get(random.nextInt(cellsToHint.size())));
             });
 
             game.addHints(hints);
@@ -84,9 +89,15 @@ public class DefaultGameService extends DefaultBaseService<Game> implements Game
         }
         toCheck.addAll(game.getCells());
         toCheck.addAll(hints);
-        check(puzzle, user, toCheck, true);
+        check(puzzle, user, toCheck, isAttemptCounts);
 
         return hints;
+    }
+
+    private List<Cell> getCellsToHint(Puzzle puzzle, Game game) {
+        return puzzle.getCells().stream()
+                .filter(cell -> !game.getCells().contains(cell))
+                .toList();
     }
 
     @Override
@@ -99,5 +110,10 @@ public class DefaultGameService extends DefaultBaseService<Game> implements Game
 
     private Game createIfNotPlayed(Puzzle puzzle, User user) {
         return repo.findByPuzzleIdAndUserId(puzzle.getId(), user.getId()).orElse(new Game(puzzle, user));
+    }
+
+    @Override
+    public Page<GameStats> getLeaders(Pageable pageable) {
+        return repo.findLeaders(pageable);
     }
 }
