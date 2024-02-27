@@ -89,7 +89,7 @@
         }
 
         function check() {
-            doPost('<@u.path "game/" + puzzle.id  + "/check"/>', {
+            doPost('<@u.path "api/game/" + puzzle.id  + "/check"/>', {
                 cells: getChecked()
             })
                 .then(() => {
@@ -98,7 +98,7 @@
         }
 
         function leave() {
-            doPost('<@u.path "game/" + puzzle.id + "/save-state"/>', {
+            doPost('<@u.path "api/game/" + puzzle.id + "/save-state"/>', {
                 cells: getChecked()
             })
                 .then(() => {
@@ -107,7 +107,7 @@
         }
 
         function hint() {
-            doPost('<@u.path "game/" + puzzle.id + "/hint"/>', {
+            doPost('<@u.path "api/game/" + puzzle.id + "/hint"/>', {
                 cells: getChecked()
             })
                 .then(() => {

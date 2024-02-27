@@ -47,15 +47,16 @@ public class SecurityConfig {
                                         "/puzzle/create",
                                         "/puzzle/{puzzle_id}/play",
                                         "/puzzle/{puzzle_id}/fill",
+                                        "/game/leaders",
                                         "/oauth/success")
                                 .authenticated()
                                 .requestMatchers(HttpMethod.POST,
                                         "/logout",
                                         "/puzzle/create",
                                         "/puzzle/{puzzle_id}/check",
-                                        "/game/{puzzle_id}/check",
-                                        "/game/{puzzle_id}/save-state",
-                                        "/game/{puzzle_id}/hint")
+                                        "/api/game/{puzzle_id}/check",
+                                        "/api/game/{puzzle_id}/save-state",
+                                        "/api/game/{puzzle_id}/hint")
                                 .authenticated()
 
                                 .requestMatchers(HttpMethod.GET,

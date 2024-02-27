@@ -156,17 +156,6 @@ public class PuzzleController {
         return view;
     }
 
-    @PostMapping("/{puzzle_id}/check")
-    public String check(@PathVariable("puzzle_id") Puzzle puzzle,
-                        HttpSession session,
-                        @RequestParam(name = "cell") String[] coordinates) {
-        User user = ControllerHelper.getCurrentUser(session);
-
-        gameService.check(puzzle, user, cellService.parseCells(coordinates));
-
-        return String.format("redirect:/puzzle/%d/play", puzzle.getId());
-    }
-
     @GetMapping("/{puzzle_id}/delete")
     public String deleteForm(@PathVariable("puzzle_id") Puzzle puzzle,
                              Model model) {
@@ -191,16 +180,5 @@ public class PuzzleController {
         }
 
         return view;
-    }
-
-    @PostMapping("/{puzzle_id}/hint")
-    public String hint(@PathVariable("puzzle_id") Puzzle puzzle,
-                       HttpSession session,
-                       Model model) {
-        User user = ControllerHelper.getCurrentUser(session);
-
-        model.addAttribute("hints", gameService.giveHints(puzzle, user));
-
-        return String.format("redirect:/puzzle/%d/play", puzzle.getId());
     }
 }
