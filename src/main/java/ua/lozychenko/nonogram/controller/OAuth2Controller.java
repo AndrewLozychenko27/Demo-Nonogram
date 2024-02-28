@@ -35,6 +35,10 @@ public class OAuth2Controller {
                         Role.PLAYER
                 ));
 
+        if (user.getId() == null) {
+            user = userService.save(user);
+        }
+
         session.setAttribute(SESSION_USER, user);
         return "redirect:/";
     }
