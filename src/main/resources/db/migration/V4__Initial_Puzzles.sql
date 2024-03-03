@@ -40,7 +40,7 @@ FROM (SELECT id
       FROM cell
       WHERE x < 10 AND y < 10
       ORDER BY RANDOM()
-      LIMIT 10) cell
+      LIMIT 30) cell
          CROSS JOIN puzzle p
 WHERE p.name LIKE 'Puzzle S%';
 
@@ -50,7 +50,7 @@ FROM (SELECT id
       FROM cell
       WHERE x < 15 AND y < 15
       ORDER BY RANDOM()
-      LIMIT 20) cell
+      LIMIT 50) cell
          CROSS JOIN puzzle p
 WHERE p.name LIKE 'Puzzle M%';
 
@@ -60,7 +60,7 @@ FROM (SELECT id
       FROM cell
       WHERE x < 20 AND y < 20
       ORDER BY RANDOM()
-      LIMIT 30) cell
+      LIMIT 80) cell
          CROSS JOIN puzzle p
 WHERE p.name LIKE 'Puzzle L%';
 
@@ -70,7 +70,7 @@ FROM (SELECT id
       FROM cell
       WHERE x < 25 AND y < 25
       ORDER BY RANDOM()
-      LIMIT 40) cell
+      LIMIT 100) cell
          CROSS JOIN puzzle p
 WHERE p.name LIKE 'Puzzle XL%';
 
@@ -80,6 +80,6 @@ FROM (SELECT id
       FROM cell
       WHERE x < 30 AND y < 30
       ORDER BY RANDOM()
-      LIMIT 50) cell
+      LIMIT 200) cell
          CROSS JOIN puzzle p
 WHERE p.name LIKE 'Puzzle XXL%';

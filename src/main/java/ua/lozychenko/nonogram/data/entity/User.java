@@ -1,14 +1,5 @@
 package ua.lozychenko.nonogram.data.entity;
 
-import org.hibernate.validator.constraints.Length;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import ua.lozychenko.nonogram.constraint.PasswordConfirmation;
-import ua.lozychenko.nonogram.constraint.StrongPassword;
-import ua.lozychenko.nonogram.constraint.UniqueEmail;
-import ua.lozychenko.nonogram.constraint.group.CredentialsGroup;
-import ua.lozychenko.nonogram.constraint.group.PasswordGroup;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -19,6 +10,15 @@ import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
+import org.hibernate.validator.constraints.Length;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import ua.lozychenko.nonogram.constraint.PasswordConfirmation;
+import ua.lozychenko.nonogram.constraint.StrongPassword;
+import ua.lozychenko.nonogram.constraint.UniqueEmail;
+import ua.lozychenko.nonogram.constraint.group.CredentialsGroup;
+import ua.lozychenko.nonogram.constraint.group.PasswordGroup;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -50,6 +50,9 @@ public class User implements UserDetails {
     @NotEmpty(message = "Password confirmation is required", groups = PasswordGroup.class)
     private String passwordConfirmation;
     private Boolean activated;
+
+    private Integer score;
+
     @Enumerated(EnumType.STRING)
     private Role role;
 
@@ -63,6 +66,7 @@ public class User implements UserDetails {
         this.passwordConfirmation = passwordConfirmation;
         this.activated = activated;
         this.role = role;
+        this.score = 0;
     }
 
     public Long getId() {
@@ -119,6 +123,14 @@ public class User implements UserDetails {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public Integer getScore() {
+        return score;
+    }
+
+    public void setScore(Integer score) {
+        this.score = score;
     }
 
     @Override

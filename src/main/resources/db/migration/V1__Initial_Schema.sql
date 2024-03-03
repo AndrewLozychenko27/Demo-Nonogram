@@ -12,7 +12,8 @@ CREATE TABLE users
     email     varchar(256) NOT NULL UNIQUE,
     password  varchar(256) NOT NULL,
     activated boolean      NOT NULL DEFAULT FALSE,
-    role      varchar(256) NOT NULL
+    role      varchar(256) NOT NULL,
+    score     integer      NOT NULL DEFAULT 0
 );
 
 CREATE TABLE cell
