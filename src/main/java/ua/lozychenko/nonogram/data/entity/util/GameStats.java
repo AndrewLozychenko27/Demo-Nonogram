@@ -1,12 +1,9 @@
 package ua.lozychenko.nonogram.data.entity.util;
 
 public interface GameStats {
+    String getNickname();
 
-    public String getNickname();
+    String getEmail();
 
-    public String getEmail();
-
-    public Double getHints();
-
-    public Double getAttempts();
+    Double getScore();
 }

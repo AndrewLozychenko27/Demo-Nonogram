@@ -42,7 +42,7 @@ tr.bg-bronze th, tr.bg-bronze td {
     background-color: #cd7f32;
 }
 
-tr.me th, tr.me td {
+tr.me {
     border: solid 2px black;
 }
 
@@ -81,7 +81,6 @@ tr.me th, tr.me td {
 .cell:checked::before, .hint:checked::before {
     transform: scale(1);
 }
-
 
 .table-cell {
     width: 30px;

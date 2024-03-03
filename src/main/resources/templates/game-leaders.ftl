@@ -8,13 +8,12 @@
             <tr>
                 <th scope="col">#</th>
                 <th scope="col">Player</th>
-                <th scope="col">Hints used</th>
-                <th scope="col">Attempts used</th>
+                <th scope="col">Score</th>
             </tr>
             </thead>
             <#assign number = 1/>
             <tbody>
-            <#list leaders.content as player>
+            <#list leaders as player>
                 <#if number == 1>
                     <#assign rankStyle = "bg-gold"/>
                 <#elseif number == 2>
@@ -25,8 +24,19 @@
                     <#assign rankStyle = ""/>
                 </#if>
 
-                <#if currentUser.nickname = player.nickname>
+                <#if currentUser.email == player.email>
                     <#assign rankStyle = rankStyle + " me"/>
+                </#if>
+
+                <#if number gt 10>
+                    <#if player.email == currentUser.email>
+                        <tr>
+                            <td colspan="4"><h3 class="text-center">...</h3></td>
+                        </tr>
+                    <#else>
+                        <#assign number++/>
+                        <#continue/>
+                    </#if>
                 </#if>
 
                 <tr class="${rankStyle}">
@@ -44,8 +54,7 @@
                     </th>
                     <#assign number++/>
                     <td>${player.nickname} (${player.email})</td>
-                    <td>${player.hints}%</td>
-                    <td>${player.attempts}%</td>
+                    <td>${player.score}</td>
                 </tr>
             </#list>
             </tbody>
