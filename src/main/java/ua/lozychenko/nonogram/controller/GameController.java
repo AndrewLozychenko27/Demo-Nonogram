@@ -9,7 +9,7 @@ import ua.lozychenko.nonogram.service.data.GameService;
 @Controller
 @RequestMapping("/game")
 public class GameController {
-    private GameService gameService;
+    private final GameService gameService;
 
     public GameController(GameService gameService) {
         this.gameService = gameService;

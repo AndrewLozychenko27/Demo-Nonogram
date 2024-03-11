@@ -8,11 +8,13 @@ import ua.lozychenko.nonogram.data.entity.Puzzle;
 import ua.lozychenko.nonogram.data.entity.State;
 import ua.lozychenko.nonogram.data.entity.User;
 import ua.lozychenko.nonogram.data.entity.util.GameStats;
+import ua.lozychenko.nonogram.data.entity.util.PuzzleStats;
 import ua.lozychenko.nonogram.data.repo.GameRepo;
 import ua.lozychenko.nonogram.data.repo.UserRepo;
 import ua.lozychenko.nonogram.service.data.GameService;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -89,7 +91,7 @@ public class DefaultGameService extends DefaultBaseService<Game> implements Game
         }
 
         if (getHintsPercentage(game) <= HINTS_THRESHOLD) {
-            res = (int) ((res * game.getPuzzle().getWidth() * PUZZLE_SIZE_MULTIPLIER) + (res * game.getPuzzle().getHeight() * PUZZLE_SIZE_MULTIPLIER));
+            res = (int) (res * ((game.getPuzzle().getWidth() * PUZZLE_SIZE_MULTIPLIER) + (game.getPuzzle().getHeight() * PUZZLE_SIZE_MULTIPLIER)));
 
             if (game.getAttempts() <= PERFECT_THRESHOLD && getHintsPercentage(game) <= HINTS_PERFECT_THRESHOLD) {
                 res = (int) (res * (PERFECT_MULTIPLIER * (THIRD * (PERFECT_THRESHOLD - game.getAttempts()))));
@@ -111,44 +113,80 @@ public class DefaultGameService extends DefaultBaseService<Game> implements Game
 
     @Override
     public List<Cell> giveHints(Puzzle puzzle, User user, List<Cell> cells) {
-        Cell hint;
-        int hintsCount;
+        int hintsCount = getHintsCount(puzzle);
         List<Cell> cellsToHint;
-        Random random = new Random();
-        List<Cell> hints = new LinkedList<>();
+        List<Cell> hints = new ArrayList<>();
         List<Cell> toCheck = new ArrayList<>();
         Game game = createIfNotPlayed(puzzle, user);
-        boolean isAttemptCounts = new HashSet<>(game.getCells()).containsAll(cells) && new HashSet<>(cells).containsAll(game.getCells());
+        boolean isAttemptNotCounts = new HashSet<>(game.getCells()).containsAll(cells) && new HashSet<>(cells).containsAll(game.getCells());
 
+        cells = excludeRemoved(cells, game);
         game = save(puzzle, user, cells);
-        cellsToHint = getCellsToHint(puzzle, game);
+        cellsToHint = getDifference(puzzle.getCells(), game.getCells());
 
         if (!cellsToHint.isEmpty()) {
-            hintsCount = (int) (puzzle.getCells().size() * property.getHint().getThreshold());
-            if (hintsCount < property.getHint().getMin()) {
-                hintsCount = property.getHint().getMin();
-            }
-
-            for (int i = 0; i < hintsCount; i++) {
-                hint = cellsToHint.get(random.nextInt(cellsToHint.size()));
-                hints.add(hint);
-                cellsToHint.remove(hint);
-            }
-
+            hints = hintByAdding(hintsCount, cellsToHint);
             game.addHints(hints);
-            repo.save(game);
+            toCheck.addAll(hints);
+        } else if (game.getCells().size() > puzzle.getCells().size()) {
+            hints = hintByRemoving(hintsCount, getDifference(cells, puzzle.getCells()), game.getCells());
+            game.addRemoved(hints);
         }
+        repo.save(game);
         toCheck.addAll(game.getCells());
-        toCheck.addAll(hints);
-        check(puzzle, user, toCheck, isAttemptCounts);
+        check(puzzle, user, toCheck, isAttemptNotCounts);
 
         return hints;
     }
 
-    private List<Cell> getCellsToHint(Puzzle puzzle, Game game) {
-        return puzzle.getCells().stream()
-                .filter(cell -> !game.getCells().contains(cell))
-                .collect(Collectors.toCollection(LinkedList::new));
+    private List<Cell> excludeRemoved(List<Cell> cells, Game game) {
+        return cells.stream().filter(cell -> !game.containsRemoved(cell.getX(), cell.getY())).toList();
+    }
+
+    private List<Cell> hintByRemoving(int hintsCount, List<Cell> cellsToRemove, List<Cell> cells) {
+        Cell hint;
+        Random random = new Random();
+        List<Cell> removed = new LinkedList<>();
+
+        for (int i = 0; i < hintsCount && !cellsToRemove.isEmpty(); i++) {
+            hint = cellsToRemove.get(random.nextInt(cellsToRemove.size()));
+            cells.remove(hint);
+            cellsToRemove.remove(hint);
+            removed.add(hint);
+        }
+
+        return removed;
+    }
+
+    private List<Cell> hintByAdding(int hintsCount, List<Cell> cellsToHint) {
+        Cell hint;
+        Random random = new Random();
+        List<Cell> hints = new LinkedList<>();
+
+        for (int i = 0; i < hintsCount && !cellsToHint.isEmpty(); i++) {
+            hint = cellsToHint.get(random.nextInt(cellsToHint.size()));
+            hints.add(hint);
+            cellsToHint.remove(hint);
+        }
+
+        return hints;
+    }
+
+    private int getHintsCount(Puzzle puzzle) {
+        int hintsCount;
+
+        hintsCount = (int) (puzzle.getCells().size() * property.getHint().getThreshold());
+        if (hintsCount < property.getHint().getMin()) {
+            hintsCount = property.getHint().getMin();
+        }
+
+        return hintsCount;
+    }
+
+    private List<Cell> getDifference(List<Cell> cells, List<Cell> target) {
+        return cells.stream()
+                .filter(cell -> !target.contains(cell))
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     @Override
@@ -166,5 +204,17 @@ public class DefaultGameService extends DefaultBaseService<Game> implements Game
     @Override
     public List<GameStats> getLeaders() {
         return repo.findLeaders();
+    }
+
+    @Override
+    public PuzzleStats getPuzzleStats(Puzzle puzzle) {
+        List<Game> games = puzzle.getGames();
+
+        return new PuzzleStats(
+                games.size(),
+                games.stream().filter(game -> game.getState().equals(State.SOLVED)).count(),
+                games.stream().map(Game::getAttempts).min(Comparator.comparingInt(a -> a)).orElse(0),
+                games.stream().map(game -> game.getHints().size()).min(Comparator.comparingInt(h -> h)).orElse(0)
+        );
     }
 }

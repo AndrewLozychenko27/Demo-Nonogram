@@ -8,7 +8,7 @@ CREATE SEQUENCE suggestion_seq START WITH 1 INCREMENT BY 1;
 CREATE TABLE users
 (
     id        int8 PRIMARY KEY,
-    nickname  varchar(256) NOT NULL UNIQUE,
+    nickname  varchar(256) NOT NULL,
     email     varchar(256) NOT NULL UNIQUE,
     password  varchar(256) NOT NULL,
     activated boolean      NOT NULL DEFAULT FALSE,
@@ -63,8 +63,9 @@ CREATE TABLE suggestion
 
 CREATE TABLE hint
 (
-    cell_id int8 NOT NULL,
-    game_id int8 NOT NULL,
+    cell_id    int8    NOT NULL,
+    game_id    int8    NOT NULL,
+    is_removed boolean NOT NULL DEFAULT FALSE,
     CONSTRAINT FK_hint_cell FOREIGN KEY (cell_id) REFERENCES cell (id) ON DELETE CASCADE,
     CONSTRAINT FK_hint_game FOREIGN KEY (game_id) REFERENCES game (id) ON DELETE CASCADE
 );

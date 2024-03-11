@@ -1,14 +1,16 @@
-<#macro field puzzle keys="empty" suggestions=[] isSolved=false>
-    <#if keys == "empty">
-        <#assign  showKeys=false/>
-    <#else>
-        <#assign  showKeys=true/>
-    </#if>
+<#include "security.ftl"/>
 
-    <#if suggestions?size == 0>
-        <#assign  isPlaying=false/>
+<#macro field puzzle keys="empty" game="empty">
+
+    <#assign showKeys = !keys.equals("empty")/>
+    <#if game == "empty">
+        <#assign
+        isPlaying = false
+        isSolved = false/>
     <#else>
-        <#assign  isPlaying=true/>
+        <#assign
+        isPlaying = true
+        isSolved = game.getState().equals("SOLVED")/>
     </#if>
 
     <div class="d-flex justify-content-center">
@@ -50,26 +52,43 @@
                             </#if>
                         </p>
                     </th>
-                    <#list 0..<puzzle.width as x>
-                        <#assign cellStyle="cell"/>
-                        <td class="table-cell p-0 <#if x !=0 && (x + 1) % 5 == 0>b-r</#if> <#if y !=0 && (y + 1) % 5 == 0>b-b</#if>">
-                            <input type="checkbox" id="${y}:${x}" name="cell" value="${y}:${x}"
-                                    <#if isPlaying??>
-                                        <#if suggestions?seq_contains(y + ":" + x) || suggestions?seq_contains(y + ":" + x + " hint")>
+                    <#if currentUser.id == puzzle.user.id>
+                        <#list 0..<puzzle.width as x>
+                            <#assign cellStyle="cell"/>
+                            <td class="table-cell p-0 <#if x !=0 && (x + 1) % 5 == 0>b-r</#if> <#if y !=0 && (y + 1) % 5 == 0>b-b</#if>">
+                                <input type="checkbox" name="cell" class="cell"
+                                        <#if puzzle.containsCell(y, x)>
                                             checked
                                         </#if>
-                                        <#if isSolved>
-                                            disabled
+                                >
+                            </td>
+                        </#list>
+                    <#else>
+                        <#list 0..<puzzle.width as x>
+                            <#assign cellStyle="cell"/>
+                            <td class="table-cell p-0 <#if x !=0 && (x + 1) % 5 == 0>b-r</#if> <#if y !=0 && (y + 1) % 5 == 0>b-b</#if>">
+                                <input type="checkbox" id="${y}:${x}" name="cell" value="${y}:${x}"
+                                        <#if isPlaying>
+                                            <#if game.containsCell(y, x) || game.containsHint(y, x)>
+                                                checked
+                                            </#if>
+                                            <#if isSolved>
+                                                disabled
+                                            </#if>
+                                            <#if game.containsHint(y, x)>
+                                                disabled
+                                                <#assign cellStyle="hint"/>
+                                            </#if>
+                                            <#if game.containsRemoved(y, x)>
+                                                disabled
+                                                <#assign cellStyle="removed"/>
+                                            </#if>
                                         </#if>
-                                        <#if suggestions?seq_contains(y + ":" + x + " hint")>
-                                            disabled
-                                            <#assign cellStyle="hint"/>
-                                        </#if>
-                                    </#if>
-                                   class=${cellStyle}
-                            >
-                        </td>
-                    </#list>
+                                       class=${cellStyle}
+                                >
+                            </td>
+                        </#list>
+                    </#if>
                 </tr>
             </#list>
             </tbody>

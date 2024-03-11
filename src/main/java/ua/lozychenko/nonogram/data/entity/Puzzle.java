@@ -1,10 +1,5 @@
 package ua.lozychenko.nonogram.data.entity;
 
-import org.hibernate.validator.constraints.Length;
-import ua.lozychenko.nonogram.constraint.UniquePuzzleName;
-import ua.lozychenko.nonogram.constraint.group.NameGroup;
-import ua.lozychenko.nonogram.constraint.group.SizeGroup;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -20,6 +15,11 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.Length;
+import ua.lozychenko.nonogram.constraint.UniquePuzzleName;
+import ua.lozychenko.nonogram.constraint.group.NameGroup;
+import ua.lozychenko.nonogram.constraint.group.SizeGroup;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -69,11 +69,11 @@ public class Puzzle {
     }
 
     public Puzzle(String name, Short width, Short height, User user) {
+        this();
         this.name = name;
         this.width = width;
         this.height = height;
         this.user = user;
-        this.visible = true;
     }
 
     public Long getId() {
@@ -154,5 +154,9 @@ public class Puzzle {
 
     public boolean isEmpty() {
         return cells.isEmpty();
+    }
+
+    public boolean containsCell(short x, short y) {
+        return cells.contains(new Cell(x, y));
     }
 }

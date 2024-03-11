@@ -11,7 +11,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,27 +42,23 @@ public class Game {
     )
     private List<Cell> cells;
 
-    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
-    @JoinTable(
-            name = "hint",
-            joinColumns = @JoinColumn(name = "game_id"),
-            inverseJoinColumns = @JoinColumn(name = "cell_id")
-    )
-    private List<Cell> hints;
+    @OneToMany(mappedBy = "game", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    private List<Hint> hints;
 
     @Enumerated(EnumType.STRING)
     private State state;
 
     public Game() {
-    }
-
-    public Game(Puzzle puzzle, User user) {
-        this.puzzle = puzzle;
-        this.user = user;
         this.attempts = 0;
         this.cells = new ArrayList<>();
         this.hints = new ArrayList<>();
         this.state = State.IN_PROGRESS;
+    }
+
+    public Game(Puzzle puzzle, User user) {
+        this();
+        this.puzzle = puzzle;
+        this.user = user;
     }
 
     public Long getId() {
@@ -104,11 +102,7 @@ public class Game {
     }
 
     public List<Cell> getHints() {
-        return hints;
-    }
-
-    public void setHints(List<Cell> hints) {
-        this.hints = hints;
+        return hints.stream().map(Hint::getCell).toList();
     }
 
     public State getState() {
@@ -128,7 +122,12 @@ public class Game {
     }
 
     public void addHints(List<Cell> hints) {
-        this.hints.addAll(hints);
+        this.hints.addAll(hints.stream().map(cell -> new Hint(cell, this)).toList());
+    }
+
+    public void addRemoved(List<Cell> removed) {
+        this.hints.addAll(removed.stream().map(cell -> new Hint(cell, this, true)).toList());
+        this.cells.removeAll(removed);
     }
 
     public void clearAndAddCells(List<Cell> cells) {
@@ -136,13 +135,19 @@ public class Game {
         this.cells.addAll(cells);
     }
 
-    public String[] getCellsAsStrings() {
-        return cells.stream()
-                .map(cell -> String.format("%d:%d%s", cell.getX(), cell.getY(), hints.contains(cell) ? " hint" : ""))
-                .toList().toArray(String[]::new);
+    public int getHintsPercent() {
+        return (int) ((hints.size() * 100.0f) / puzzle.getCells().size());
     }
 
-    public int getHintsCount() {
-        return (int) ((hints.size() * 100.0f) / puzzle.getCells().size());
+    public boolean containsCell(short x, short y) {
+        return cells.contains(new Cell(x, y));
+    }
+
+    public boolean containsHint(short x, short y) {
+        return hints.stream().anyMatch(hint -> hint.getCell().equals(new Cell(x, y)));
+    }
+
+    public boolean containsRemoved(short x, short y) {
+        return hints.stream().anyMatch(hint -> hint.getCell().equals(new Cell(x, y)) && hint.isRemoved());
     }
 }

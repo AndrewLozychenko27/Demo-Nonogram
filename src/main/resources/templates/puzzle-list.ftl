@@ -53,7 +53,7 @@
                                 <p class="card-text">Cells: ${puzzle.cells?size}</p>
                                 <#if hasGame>
                                     <p class="card-text">Attempts: ${game.attempts}</p>
-                                    <p class="card-text">Hints: ${game.getHintsCount()}%</p>
+                                    <p class="card-text">Hints: ${game.getHintsPercent()}%</p>
                                 </#if>
                             </#if>
                         </div>
@@ -71,7 +71,7 @@
                             <#elseif puzzle.user.id == currentUser.id>
                                 <div class="row m-2">
                                     <a class="btn btn-outline-primary mb-2" role="button"
-                                       href="<@u.path "puzzle/" + puzzle.id + "/edit"/>">Edit</a>
+                                       href="<@u.path "puzzle/" + puzzle.id + "/view"/>">View</a>
                                     <a class="btn btn-outline-danger" role="button"
                                        href="<@u.path "puzzle/" + puzzle.id + "/delete"/>">Delete</a>
                                 </div>

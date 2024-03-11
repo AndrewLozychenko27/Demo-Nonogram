@@ -92,31 +92,14 @@ public class PuzzleController {
         return view;
     }
 
-    @GetMapping("/{puzzle_id}/edit")
+    @GetMapping("/{puzzle_id}/view")
     public String editForm(@PathVariable("puzzle_id") Puzzle puzzle,
                            Model model) {
         model.addAttribute("puzzle", puzzle);
+        model.addAttribute("puzzleStats", gameService.getPuzzleStats(puzzle));
+        model.addAttribute("keys", puzzleService.generateKeys(puzzle));
 
-        return "puzzle-edit";
-    }
-
-    @PostMapping("/{puzzle_id}/edit")
-    public String edit(@PathVariable("puzzle_id") Puzzle puzzle,
-                       @Validated(NameGroup.class) Puzzle changes,
-                       BindingResult result,
-                       Model model) {
-        String view;
-
-        if (result.hasErrors()) {
-            model.addAttribute(BINDING_RESULT + "puzzle", ValidationHelper.filterErrors(result));
-            model.addAttribute("changes", changes);
-            view = "puzzle-edit";
-        } else {
-            puzzleService.edit(puzzle, changes);
-            view = "redirect:/puzzle/list";
-        }
-
-        return view;
+        return "puzzle-view";
     }
 
     @GetMapping("/{puzzle_id}/play")

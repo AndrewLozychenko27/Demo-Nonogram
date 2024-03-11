@@ -64,4 +64,12 @@ public class Cell {
                 && (this.getX().equals(cell.getX()))
                 && (this.getY().equals(cell.getY()));
     }
+
+    @Override
+    public String toString() {
+        return "Cell{" +
+                "x=" + x +
+                ", y=" + y +
+                '}';
+    }
 }

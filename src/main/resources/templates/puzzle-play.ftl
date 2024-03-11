@@ -21,15 +21,15 @@
             <h5 class="text-center"><b>${puzzle.name}</b></h5>
         </div>
         <#if hasGame>
-            <@pz.field puzzle keys game.getCellsAsStrings() game.state == "SOLVED"/>
+            <@pz.field puzzle keys game/>
         <#else>
-            <@pz.field puzzle keys />
+            <@pz.field puzzle keys/>
         </#if>
         <#if hasGame && game.state == "SOLVED">
             <div class="w-13 m-auto mt-3">
                 <div class="row">
                     <div class="col-sm-6">
-                        <p class="text-center">Hints: ${game.getHintsCount()}%</p>
+                        <p class="text-center">Hints: ${game.getHintsPercent()}%</p>
                     </div>
                     <div class="col-sm-6">
                         <p class="text-center">Attempts: ${game.attempts}</p>
@@ -45,9 +45,9 @@
                 <div class="row">
                     <div class="col-sm-6">
                         <#if hasGame>
-                            <p class="text-center">Hints: ${game.getHintsCount()}%</p>
+                            <p class="text-center">Hints: ${game.getHintsPercent()}%</p>
                         <#else>
-                            <p class="text-center">Hints: 0</p>
+                            <p class="text-center">Hints: 0%</p>
                         </#if>
                     </div>
                     <div class="col-sm-6">
