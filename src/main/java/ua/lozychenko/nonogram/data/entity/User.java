@@ -57,16 +57,17 @@ public class User implements UserDetails {
     private Role role;
 
     public User() {
+        this.activated = true;
+        this.role = Role.PLAYER;
+        this.score = 0;
     }
 
-    public User(String nickname, String email, String password, String passwordConfirmation, Boolean activated, Role role) {
+    public User(String nickname, String email, String password, String passwordConfirmation) {
+        this();
         this.nickname = nickname;
         this.email = email;
         this.password = password;
         this.passwordConfirmation = passwordConfirmation;
-        this.activated = activated;
-        this.role = role;
-        this.score = 0;
     }
 
     public Long getId() {
@@ -140,7 +141,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return getNickname();
+        return getEmail();
     }
 
     @Override

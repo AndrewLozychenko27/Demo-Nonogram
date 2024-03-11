@@ -46,7 +46,6 @@ public class SecurityConfig {
                                         "/puzzle/list",
                                         "/puzzle/create",
                                         "/puzzle/{puzzle_id}/play",
-                                        "/puzzle/{puzzle_id}/fill",
                                         "/game/leaders",
                                         "/oauth/success")
                                 .authenticated()
@@ -73,13 +72,13 @@ public class SecurityConfig {
                                 .access(processExpression("@securityHelper.isSelfEdit(principal, #user_id)"))
 
                                 .requestMatchers(HttpMethod.GET,
-                                        "/puzzle/{puzzle_id}/edit",
+                                        "/puzzle/{puzzle_id}/view",
+                                        "/puzzle/{puzzle_id}/fill",
                                         "/puzzle/{puzzle_id}/delete")
                                 .access(processExpression("@securityHelper.isPuzzleOwner(principal, #puzzle_id)"))
                                 .requestMatchers(HttpMethod.POST,
-                                        "/puzzle/{puzzle_id}/edit",
-                                        "/puzzle/{puzzle_id}/delete",
-                                        "/puzzle/{puzzle_id}/fill")
+                                        "/puzzle/{puzzle_id}/fill",
+                                        "/puzzle/{puzzle_id}/delete")
                                 .access(processExpression("@securityHelper.isPuzzleOwner(principal, #puzzle_id)"))
 
                                 .requestMatchers(HttpMethod.GET,
@@ -95,7 +94,7 @@ public class SecurityConfig {
                         form
                                 .loginPage("/login")
                                 .defaultSuccessUrl("/", true)
-                                .usernameParameter("nickname")
+                                .usernameParameter("email")
                                 .permitAll())
                 .oauth2Login(oauth ->
                         oauth

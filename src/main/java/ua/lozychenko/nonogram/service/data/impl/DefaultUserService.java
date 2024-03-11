@@ -30,6 +30,7 @@ public class DefaultUserService extends DefaultBaseService<User> implements User
         user.setActivated(true);
         user.setRole(Role.PLAYER);
         user.setPassword(encoder.encode(user.getPassword()));
+        user.setScore(0);
 
         return super.save(user);
     }
@@ -68,7 +69,7 @@ public class DefaultUserService extends DefaultBaseService<User> implements User
     }
 
     @Override
-    public UserDetails loadUserByUsername(String nickname) throws UsernameNotFoundException {
-        return findByNickname(nickname).orElseThrow(() -> new UsernameNotFoundException(String.format("User with a nickname \"%s\" is not found", nickname)));
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        return findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(String.format("User with a nickname \"%s\" is not found", email)));
     }
 }

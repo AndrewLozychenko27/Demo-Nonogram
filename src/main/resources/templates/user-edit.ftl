@@ -6,8 +6,7 @@
         <@f.formBody "Edit">
             <@f.form "user/" + user.id + "/edit">
                 <@f.hidden "id" user.id/>
-                <@f.bind "user.email"/>
-                <@f.inputValid "Email" "email"><#if changes??>${changes.email}<#else>${user.email}</#if></@f.inputValid>
+                <@f.label "Email" user.email/>
                 <@f.bind "user.nickname"/>
                 <@f.inputValid "Nickname" "nickname"><#if changes??>${changes.nickname}<#else>${user.nickname}</#if></@f.inputValid>
                 <@f.submitPair "Save" "user/" + user.id + "/profile"/>

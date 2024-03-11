@@ -11,7 +11,7 @@
                 </div>
             </#if>
             <@f.form "login">
-                <@f.input "Nickname"><#if nickname??>${nickname}</#if></@f.input>
+                <@f.input "Email"><#if email??>${email}</#if></@f.input>
                 <@f.password/>
                 <div class="my-4 pt-4">
                     <@f.submit "Log in" "primary w-100"/>

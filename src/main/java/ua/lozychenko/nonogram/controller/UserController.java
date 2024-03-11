@@ -67,7 +67,7 @@ public class UserController {
             view = "user-create";
         } else {
             userService.save(user);
-            redirectAttributes.addFlashAttribute("nickname", user.getNickname());
+            redirectAttributes.addFlashAttribute("email", user.getEmail());
             view = "redirect:/login";
         }
 

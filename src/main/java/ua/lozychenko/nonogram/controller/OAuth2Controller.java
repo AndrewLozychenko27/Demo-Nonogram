@@ -30,9 +30,7 @@ public class OAuth2Controller {
                         oAuth2User.getAttribute("name"),
                         oAuth2User.getAttribute("email"),
                         oAuth2User.getName(),
-                        oAuth2User.getName(),
-                        true,
-                        Role.PLAYER
+                        oAuth2User.getName()
                 ));
 
         if (user.getId() == null) {
