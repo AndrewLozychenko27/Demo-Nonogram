@@ -13,4 +13,6 @@ public interface PuzzleService extends BaseService<Puzzle> {
     Page<Puzzle> findAll(Long userId, Pageable pageable);
 
     Hints generateKeys(Puzzle puzzle);
+
+    Puzzle fillPuzzleRandomly(Puzzle puzzle);
 }

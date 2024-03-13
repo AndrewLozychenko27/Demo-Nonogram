@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import ua.lozychenko.nonogram.config.property.PagesProperty;
+import ua.lozychenko.nonogram.config.property.PuzzlePageProperty;
 import ua.lozychenko.nonogram.constraint.group.NameGroup;
 import ua.lozychenko.nonogram.constraint.group.SizeGroup;
 import ua.lozychenko.nonogram.constraint.util.ValidationHelper;
@@ -33,12 +33,13 @@ import static ua.lozychenko.nonogram.constants.ControllerConstants.BINDING_RESUL
 @Controller
 @RequestMapping("/puzzle")
 public class PuzzleController {
-    private final PagesProperty properties;
+    public static final String GENERATE = "generate";
+    private final PuzzlePageProperty properties;
     private final PuzzleService puzzleService;
     private final CellService cellService;
     private final GameService gameService;
 
-    public PuzzleController(PagesProperty properties, PuzzleService puzzleService, CellService cellService, GameService gameService) {
+    public PuzzleController(PuzzlePageProperty properties, PuzzleService puzzleService, CellService cellService, GameService gameService) {
         this.properties = properties;
         this.puzzleService = puzzleService;
         this.cellService = cellService;
@@ -57,10 +58,10 @@ public class PuzzleController {
         User user = ControllerHelper.getCurrentUser(session);
         Pageable configuredPageable = pageable;
 
-        if (Arrays.stream(properties.getPuzzle().getSizeRange()).noneMatch(size -> size == pageable.getPageSize())) {
-            configuredPageable = PageRequest.of(pageable.getPageNumber(), properties.getPuzzle().getDefaultSize(), pageable.getSort());
+        if (Arrays.stream(properties.sizeRange()).noneMatch(size -> size == pageable.getPageSize())) {
+            configuredPageable = PageRequest.of(pageable.getPageNumber(), properties.defaultSize(), pageable.getSort());
         }
-        model.addAttribute("sizes", properties.getPuzzle().getSizeRange());
+        model.addAttribute("sizes", properties.sizeRange());
         model.addAttribute("puzzles", puzzleService.findAll(user.getId(), configuredPageable));
 
         return "puzzle-list";
@@ -73,6 +74,7 @@ public class PuzzleController {
 
     @PostMapping("/create")
     public String createPuzzle(@Validated({NameGroup.class, SizeGroup.class}) Puzzle puzzle,
+                               String fill,
                                BindingResult result,
                                HttpSession session,
                                Model model) {
@@ -86,6 +88,9 @@ public class PuzzleController {
         } else {
             puzzle.setUser(user);
             puzzleService.save(puzzle);
+            if (GENERATE.equals(fill)) {
+                puzzleService.fillPuzzleRandomly(puzzle);
+            }
             view = "redirect:/puzzle/list";
         }
 

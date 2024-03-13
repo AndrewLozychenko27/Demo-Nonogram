@@ -1,8 +1,7 @@
 <#include "security.ftl"/>
 
 <#macro field puzzle keys="empty" game="empty">
-
-    <#assign showKeys = !keys.equals("empty")/>
+    <#assign showKeys = keys != "empty"/>
     <#if game == "empty">
         <#assign
         isPlaying = false
@@ -52,7 +51,7 @@
                             </#if>
                         </p>
                     </th>
-                    <#if currentUser.id == puzzle.user.id>
+                    <#if currentUser.id == puzzle.user.id && !puzzle.isEmpty()>
                         <#list 0..<puzzle.width as x>
                             <#assign cellStyle="cell"/>
                             <td class="table-cell p-0 <#if x !=0 && (x + 1) % 5 == 0>b-r</#if> <#if y !=0 && (y + 1) % 5 == 0>b-b</#if>">
@@ -60,6 +59,7 @@
                                         <#if puzzle.containsCell(y, x)>
                                             checked
                                         </#if>
+                                       disabled
                                 >
                             </td>
                         </#list>
