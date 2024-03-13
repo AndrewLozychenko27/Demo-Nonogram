@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import ua.lozychenko.nonogram.config.property.PagesProperty;
+import ua.lozychenko.nonogram.config.property.UserPageProperty;
 import ua.lozychenko.nonogram.constraint.group.CredentialsGroup;
 import ua.lozychenko.nonogram.constraint.group.PasswordGroup;
 import ua.lozychenko.nonogram.constraint.util.ValidationHelper;
@@ -37,10 +37,10 @@ import static ua.lozychenko.nonogram.constants.ControllerConstants.BINDING_RESUL
 public class UserController {
     public static final String BINDING_RESULT_USER = BINDING_RESULT + "user";
 
-    private final PagesProperty property;
+    private final UserPageProperty property;
     private final UserService userService;
 
-    public UserController(PagesProperty property, UserService userService) {
+    public UserController(UserPageProperty property, UserService userService) {
         this.property = property;
         this.userService = userService;
     }
@@ -170,8 +170,8 @@ public class UserController {
         Page<User> users;
         Pageable configuredPageable = pageable;
 
-        if (Arrays.stream(property.getUser().getSizeRange()).noneMatch(size -> size == pageable.getPageSize())) {
-            configuredPageable = PageRequest.of(pageable.getPageNumber(), property.getUser().getDefaultSize(), pageable.getSort());
+        if (Arrays.stream(property.sizeRange()).noneMatch(size -> size == pageable.getPageSize())) {
+            configuredPageable = PageRequest.of(pageable.getPageNumber(), property.defaultSize(), pageable.getSort());
         }
 
         if (nickname.isPresent()) {
@@ -180,7 +180,7 @@ public class UserController {
             users = userService.findAll(configuredPageable);
         }
         model.addAttribute("users", users);
-        model.addAttribute("sizes", property.getUser().getSizeRange());
+        model.addAttribute("sizes", property.sizeRange());
 
         return "user-list";
     }

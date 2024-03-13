@@ -101,7 +101,7 @@ public class SecurityConfig {
                                 .loginPage("/login")
                                 .defaultSuccessUrl("/oauth/success")
                                 .clientRegistrationRepository(registrationId ->
-                                        getGoogleClientRegistration(registrationId, oAuth2Property.getClientId(), oAuth2Property.getClientSecret(), oAuth2Property.getScopes())
+                                        getGoogleClientRegistration(registrationId, oAuth2Property.clientId(), oAuth2Property.clientSecret(), oAuth2Property.scopes())
                                 )
                 )
                 .logout(logout ->
