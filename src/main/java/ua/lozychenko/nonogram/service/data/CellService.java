@@ -3,11 +3,16 @@ package ua.lozychenko.nonogram.service.data;
 import ua.lozychenko.nonogram.data.entity.Cell;
 
 import java.util.List;
+import java.util.Set;
 
 public interface CellService extends BaseService<Cell> {
     Cell parseCell(String coordinates);
 
-    List<Cell> parseCells(String[] coordinates);
+    Set<Cell> parseCells(String[] coordinates);
 
     Cell findOrCreate(Cell cell);
+
+    List<Cell> findAllByLimit(short x, short y);
+
+    List<Cell> findAllByLimitDiagonally(short x, short y, boolean isReverse);
 }

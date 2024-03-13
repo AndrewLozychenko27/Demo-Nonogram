@@ -7,8 +7,10 @@ import ua.lozychenko.nonogram.service.data.CellService;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
 public class DefaultCellService extends DefaultBaseService<Cell> implements CellService {
@@ -36,14 +38,26 @@ public class DefaultCellService extends DefaultBaseService<Cell> implements Cell
     }
 
     @Override
-    public List<Cell> parseCells(String[] coordinates) {
+    public Set<Cell> parseCells(String[] coordinates) {
         return Arrays.stream(coordinates)
                 .map(coordinate -> findOrCreate(parseCell(coordinate)))
-                .toList();
+                .collect(Collectors.toSet());
     }
 
     @Override
     public Cell findOrCreate(Cell cell) {
         return repo.findByXAndY(cell.getX(), cell.getY()).orElse(cell);
+    }
+
+    @Override
+    public List<Cell> findAllByLimit(short x, short y) {
+        return repo.findAllByLimit(x, y);
+    }
+
+    @Override
+    public List<Cell> findAllByLimitDiagonally(short x, short y, boolean isReverse) {
+        return isReverse
+                ? repo.findAllByLimitDiagonallyReverse(x, y)
+                : repo.findAllByLimitDiagonally(x, y);
     }
 }
