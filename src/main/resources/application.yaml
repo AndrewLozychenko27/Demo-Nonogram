@@ -15,3 +15,35 @@ spring:
         persistence:
           validation:
             mode: none
+
+game:
+  hints:
+    min: 1
+    threshold: 0.1
+  score:
+    minPuzzleScore: 50
+    perfectMultiplier: 2
+    puzzleSizeMultiplier: 0.1
+    perfectThreshold: 3
+    hintsPerfectThreshold: 15
+    hintsThreshold: 85
+    withoutHints: 0
+    withoutHintsMultiplier: 2
+    almostWithoutHintsThreshold: 15
+    almostWithoutHintsMultiplier: 1.35
+    minPuzzleCellPercent: 0.2
+    maxPuzzleCellPercent: 0.8
+    outOfPuzzleSizePenalty: 0.5
+
+page:
+  puzzle:
+    defaultSize: 11
+    sizeRange: 11,23,47,95
+  user:
+    defaultSize: 10
+    sizeRange: 10,25,50,100
+
+puzzle:
+  generator:
+    fillPercent: 0.5
+    fillPercentRange: 0.15
