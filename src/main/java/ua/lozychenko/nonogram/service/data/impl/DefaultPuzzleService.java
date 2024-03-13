@@ -8,11 +8,14 @@ import ua.lozychenko.nonogram.data.entity.Puzzle;
 import ua.lozychenko.nonogram.data.entity.util.Hints;
 import ua.lozychenko.nonogram.data.repo.PuzzleRepo;
 import ua.lozychenko.nonogram.service.data.PuzzleService;
+import ua.lozychenko.nonogram.service.generator.PuzzleGenerator;
 
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -20,10 +23,12 @@ import java.util.stream.Stream;
 @Service
 public class DefaultPuzzleService extends DefaultBaseService<Puzzle> implements PuzzleService {
     private final PuzzleRepo repo;
+    private final List<PuzzleGenerator> generators;
 
-    public DefaultPuzzleService(PuzzleRepo repo) {
+    public DefaultPuzzleService(PuzzleRepo repo, List<PuzzleGenerator> generators) {
         super(repo);
         this.repo = repo;
+        this.generators = generators;
     }
 
     @Override
@@ -57,7 +62,7 @@ public class DefaultPuzzleService extends DefaultBaseService<Puzzle> implements 
     public Hints generateKeys(Puzzle puzzle) {
         Hints hints = new Hints();
 
-        List<Cell> cells = puzzle.getCells();
+        Set<Cell> cells = puzzle.getCells();
 
         extractLines(cells, Cell::getX).forEach(rowNum -> {
             List<Short> row = extractLineByNum(cells, (Cell cell) -> cell.getX().equals(rowNum), Cell::getY);
@@ -71,7 +76,7 @@ public class DefaultPuzzleService extends DefaultBaseService<Puzzle> implements 
         return hints;
     }
 
-    private List<Short> extractLineByNum(List<Cell> cells, Predicate<Cell> filter, Function<Cell, Short> target) {
+    private List<Short> extractLineByNum(Set<Cell> cells, Predicate<Cell> filter, Function<Cell, Short> target) {
         return cells.stream()
                 .filter(filter)
                 .sorted(Comparator.comparing(target))
@@ -79,7 +84,7 @@ public class DefaultPuzzleService extends DefaultBaseService<Puzzle> implements 
                 .toList();
     }
 
-    private Stream<Short> extractLines(List<Cell> cells, Function<Cell, Short> function) {
+    private Stream<Short> extractLines(Set<Cell> cells, Function<Cell, Short> function) {
         return cells.stream().map(function).distinct();
     }
 
@@ -102,5 +107,13 @@ public class DefaultPuzzleService extends DefaultBaseService<Puzzle> implements 
         }
 
         return sequences;
+    }
+
+    @Override
+    public Puzzle fillPuzzleRandomly(Puzzle puzzle) {
+        puzzle = generators.get(new Random().nextInt(generators.size())).generate(puzzle);
+        repo.save(puzzle);
+
+        return puzzle;
     }
 }
