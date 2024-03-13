@@ -20,9 +20,10 @@ import ua.lozychenko.nonogram.constraint.UniquePuzzleName;
 import ua.lozychenko.nonogram.constraint.group.NameGroup;
 import ua.lozychenko.nonogram.constraint.group.SizeGroup;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Entity
 @UniquePuzzleName(groups = NameGroup.class)
@@ -58,13 +59,13 @@ public class Puzzle {
             joinColumns = @JoinColumn(name = "puzzle_id"),
             inverseJoinColumns = @JoinColumn(name = "cell_id")
     )
-    private List<Cell> cells;
+    private Set<Cell> cells;
 
     @OneToMany(mappedBy = "puzzle")
     private List<Game> games;
 
     public Puzzle() {
-        this.cells = new ArrayList<>();
+        this.cells = new HashSet<>();
         this.visible = true;
     }
 
@@ -124,11 +125,11 @@ public class Puzzle {
         this.user = user;
     }
 
-    public List<Cell> getCells() {
+    public Set<Cell> getCells() {
         return cells;
     }
 
-    public void setCells(List<Cell> cells) {
+    public void setCells(Set<Cell> cells) {
         this.cells = cells;
     }
 
@@ -148,7 +149,7 @@ public class Puzzle {
         this.cells.add(cell);
     }
 
-    public void addCells(List<Cell> cells) {
+    public void addCells(Set<Cell> cells) {
         this.cells.addAll(cells);
     }
 

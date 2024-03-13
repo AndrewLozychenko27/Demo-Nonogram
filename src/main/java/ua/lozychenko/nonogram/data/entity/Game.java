@@ -15,7 +15,9 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Game {
@@ -40,7 +42,7 @@ public class Game {
             joinColumns = @JoinColumn(name = "game_id"),
             inverseJoinColumns = @JoinColumn(name = "cell_id")
     )
-    private List<Cell> cells;
+    private Set<Cell> cells;
 
     @OneToMany(mappedBy = "game", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     private List<Hint> hints;
@@ -50,7 +52,7 @@ public class Game {
 
     public Game() {
         this.attempts = 0;
-        this.cells = new ArrayList<>();
+        this.cells = new HashSet<>();
         this.hints = new ArrayList<>();
         this.state = State.IN_PROGRESS;
     }
@@ -93,11 +95,11 @@ public class Game {
         this.puzzle = puzzle;
     }
 
-    public List<Cell> getCells() {
+    public Set<Cell> getCells() {
         return cells;
     }
 
-    public void setCells(List<Cell> cells) {
+    public void setCells(Set<Cell> cells) {
         this.cells = cells;
     }
 
@@ -121,16 +123,16 @@ public class Game {
         this.cells.addAll(cells);
     }
 
-    public void addHints(List<Cell> hints) {
+    public void addHints(Set<Cell> hints) {
         this.hints.addAll(hints.stream().map(cell -> new Hint(cell, this)).toList());
     }
 
-    public void addRemoved(List<Cell> removed) {
+    public void addRemoved(Set<Cell> removed) {
         this.hints.addAll(removed.stream().map(cell -> new Hint(cell, this, true)).toList());
-        this.cells.removeAll(removed);
+        removed.forEach(this.cells::remove);
     }
 
-    public void clearAndAddCells(List<Cell> cells) {
+    public void clearAndAddCells(Set<Cell> cells) {
         this.cells.clear();
         this.cells.addAll(cells);
     }

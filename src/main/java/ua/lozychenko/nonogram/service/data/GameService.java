@@ -8,14 +8,14 @@ import ua.lozychenko.nonogram.data.entity.util.GameStats;
 import ua.lozychenko.nonogram.data.entity.util.PuzzleStats;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Set;
 
 public interface GameService extends BaseService<Game> {
-    Boolean check(Puzzle puzzle, User user, List<Cell> cells);
+    Boolean check(Puzzle puzzle, User user, Set<Cell> cells);
 
-    List<Cell> giveHints(Puzzle puzzle, User user, List<Cell> cells);
+    Set<Cell> giveHints(Puzzle puzzle, User user, Set<Cell> cells);
 
-    Game save(Puzzle puzzle, User user, List<Cell> cells);
+    Game save(Puzzle puzzle, User user, Set<Cell> cells);
 
     List<GameStats> getLeaders();
 
