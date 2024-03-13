@@ -1,7 +1,8 @@
 package ua.lozychenko.nonogram.service.data.impl;
 
 import org.springframework.stereotype.Service;
-import ua.lozychenko.nonogram.config.property.GameProperty;
+import ua.lozychenko.nonogram.config.property.GameHintsProperty;
+import ua.lozychenko.nonogram.config.property.GameScoreProperty;
 import ua.lozychenko.nonogram.data.entity.Cell;
 import ua.lozychenko.nonogram.data.entity.Game;
 import ua.lozychenko.nonogram.data.entity.Puzzle;
@@ -16,45 +17,33 @@ import ua.lozychenko.nonogram.service.data.GameService;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 public class DefaultGameService extends DefaultBaseService<Game> implements GameService {
-    public static final int MIN_PUZZLE_SCORE = 50;
-    public static final double PUZZLE_SIZE_MULTIPLIER = 0.1;
-    public static final int PERFECT_MULTIPLIER = 2;
-    public static final double THIRD = 0.33;
-    public static final int PERFECT_THRESHOLD = 3;
-    public static final int HINTS_PERFECT_THRESHOLD = 15;
-    public static final int HINTS_THRESHOLD = 85;
-    public static final int WITHOUT_HINTS = 0;
-    public static final int WITHOUT_HINTS_MULTIPLIER = 2;
-    public static final int ALMOST_WITHOUT_HINTS_THRESHOLD = 15;
-    public static final double ALMOST_WITHOUT_HINTS_MULTIPLIER = 1.35;
-    public static final double MIN_PUZZLE_CELLS_PERCENT = 0.2;
-    public static final double MAX_PUZZLE_CELLS_PERCENT = 0.8;
-    public static final double OUT_OF_PUZZLE_SIZE_PENALTY = 0.5;
-    private final GameProperty property;
-
+    private static final double THIRD = 0.33;
+    private final GameHintsProperty hintsProperties;
+    private final GameScoreProperty scoreProperties;
     private final GameRepo repo;
     private final UserRepo userRepo;
 
-    public DefaultGameService(GameProperty property, GameRepo repo, UserRepo userRepo) {
+    public DefaultGameService(GameHintsProperty hintsProperties, GameScoreProperty scoreProperties, GameRepo repo, UserRepo userRepo) {
         super(repo);
-        this.property = property;
+        this.hintsProperties = hintsProperties;
+        this.scoreProperties = scoreProperties;
         this.repo = repo;
         this.userRepo = userRepo;
     }
 
     @Override
-    public Boolean check(Puzzle puzzle, User user, List<Cell> cells) {
+    public Boolean check(Puzzle puzzle, User user, Set<Cell> cells) {
         return check(puzzle, user, cells, false);
     }
 
-    private Boolean check(Puzzle puzzle, User user, List<Cell> cells, boolean isForHint) {
+    private Boolean check(Puzzle puzzle, User user, Set<Cell> cells, boolean isForHint) {
         boolean solved = true;
         Game game = createIfNotPlayed(puzzle, user);
 
@@ -81,26 +70,26 @@ public class DefaultGameService extends DefaultBaseService<Game> implements Game
     }
 
     private Integer calculateGameScore(Game game) {
-        int res = MIN_PUZZLE_SCORE;
+        int res = scoreProperties.minPuzzleScore();
 
-        int minCellsCount = (int) (game.getPuzzle().getHeight() * game.getPuzzle().getWidth() * MIN_PUZZLE_CELLS_PERCENT);
-        int maxCellsCount = (int) (game.getPuzzle().getHeight() * game.getPuzzle().getWidth() * MAX_PUZZLE_CELLS_PERCENT);
+        int minCellsCount = (int) (game.getPuzzle().getHeight() * game.getPuzzle().getWidth() * scoreProperties.minPuzzleCellPercent());
+        int maxCellsCount = (int) (game.getPuzzle().getHeight() * game.getPuzzle().getWidth() * scoreProperties.maxPuzzleCellPercent());
 
         if (game.getPuzzle().getCells().size() < minCellsCount || game.getPuzzle().getCells().size() > maxCellsCount) {
-            res = (int) (res * OUT_OF_PUZZLE_SIZE_PENALTY);
+            res = (int) (res * scoreProperties.outOfPuzzleSizePenalty());
         }
 
-        if (getHintsPercentage(game) <= HINTS_THRESHOLD) {
-            res = (int) (res * ((game.getPuzzle().getWidth() * PUZZLE_SIZE_MULTIPLIER) + (game.getPuzzle().getHeight() * PUZZLE_SIZE_MULTIPLIER)));
+        if (getHintsPercentage(game) <= scoreProperties.hintsThreshold()) {
+            res = (int) (res * ((game.getPuzzle().getWidth() * scoreProperties.puzzleSizeMultiplier()) + (game.getPuzzle().getHeight() * scoreProperties.puzzleSizeMultiplier())));
 
-            if (game.getAttempts() <= PERFECT_THRESHOLD && getHintsPercentage(game) <= HINTS_PERFECT_THRESHOLD) {
-                res = (int) (res * (PERFECT_MULTIPLIER * (THIRD * (PERFECT_THRESHOLD - game.getAttempts()))));
+            if (game.getAttempts() < scoreProperties.perfectThreshold() && getHintsPercentage(game) < scoreProperties.hintsPerfectThreshold()) {
+                res = (int) (res * (scoreProperties.perfectMultiplier() * (THIRD * (scoreProperties.perfectThreshold() - game.getAttempts()))));
             }
 
-            if (getHintsPercentage(game) <= WITHOUT_HINTS) {
-                res = res * WITHOUT_HINTS_MULTIPLIER;
-            } else if (getHintsPercentage(game) <= ALMOST_WITHOUT_HINTS_THRESHOLD) {
-                res = (int) (res * ALMOST_WITHOUT_HINTS_MULTIPLIER);
+            if (getHintsPercentage(game) <= scoreProperties.withoutHints()) {
+                res = res * scoreProperties.withoutHintsMultiplier();
+            } else if (getHintsPercentage(game) <= scoreProperties.almostWithoutHintsThreshold()) {
+                res = (int) (res * scoreProperties.almostWithoutHintsMultiplier());
             }
         }
 
@@ -112,11 +101,11 @@ public class DefaultGameService extends DefaultBaseService<Game> implements Game
     }
 
     @Override
-    public List<Cell> giveHints(Puzzle puzzle, User user, List<Cell> cells) {
+    public Set<Cell> giveHints(Puzzle puzzle, User user, Set<Cell> cells) {
         int hintsCount = getHintsCount(puzzle);
-        List<Cell> cellsToHint;
-        List<Cell> hints = new ArrayList<>();
-        List<Cell> toCheck = new ArrayList<>();
+        Set<Cell> cellsToHint;
+        Set<Cell> hints = new HashSet<>();
+        Set<Cell> toCheck = new HashSet<>();
         Game game = createIfNotPlayed(puzzle, user);
         boolean isAttemptNotCounts = new HashSet<>(game.getCells()).containsAll(cells) && new HashSet<>(cells).containsAll(game.getCells());
 
@@ -139,34 +128,36 @@ public class DefaultGameService extends DefaultBaseService<Game> implements Game
         return hints;
     }
 
-    private List<Cell> excludeRemoved(List<Cell> cells, Game game) {
-        return cells.stream().filter(cell -> !game.containsRemoved(cell.getX(), cell.getY())).toList();
+    private Set<Cell> excludeRemoved(Set<Cell> cells, Game game) {
+        return cells.stream().filter(cell -> !game.containsRemoved(cell.getX(), cell.getY())).collect(Collectors.toSet());
     }
 
-    private List<Cell> hintByRemoving(int hintsCount, List<Cell> cellsToRemove, List<Cell> cells) {
+    private Set<Cell> hintByRemoving(int hintsCount, Set<Cell> cellsToRemove, Set<Cell> cells) {
         Cell hint;
         Random random = new Random();
-        List<Cell> removed = new LinkedList<>();
+        Set<Cell> removed = new HashSet<>();
+        List<Cell> cellList = new ArrayList<>(cellsToRemove);
 
         for (int i = 0; i < hintsCount && !cellsToRemove.isEmpty(); i++) {
-            hint = cellsToRemove.get(random.nextInt(cellsToRemove.size()));
+            hint = cellList.get(random.nextInt(cellsToRemove.size()));
             cells.remove(hint);
-            cellsToRemove.remove(hint);
+            cellList.remove(hint);
             removed.add(hint);
         }
 
         return removed;
     }
 
-    private List<Cell> hintByAdding(int hintsCount, List<Cell> cellsToHint) {
+    private Set<Cell> hintByAdding(int hintsCount, Set<Cell> cellsToHint) {
         Cell hint;
         Random random = new Random();
-        List<Cell> hints = new LinkedList<>();
+        Set<Cell> hints = new HashSet<>();
+        List<Cell> cellList = new ArrayList<>(cellsToHint);
 
         for (int i = 0; i < hintsCount && !cellsToHint.isEmpty(); i++) {
-            hint = cellsToHint.get(random.nextInt(cellsToHint.size()));
+            hint = cellList.get(random.nextInt(cellsToHint.size()));
             hints.add(hint);
-            cellsToHint.remove(hint);
+            cellList.remove(hint);
         }
 
         return hints;
@@ -175,22 +166,22 @@ public class DefaultGameService extends DefaultBaseService<Game> implements Game
     private int getHintsCount(Puzzle puzzle) {
         int hintsCount;
 
-        hintsCount = (int) (puzzle.getCells().size() * property.getHint().getThreshold());
-        if (hintsCount < property.getHint().getMin()) {
-            hintsCount = property.getHint().getMin();
+        hintsCount = (int) (puzzle.getCells().size() * hintsProperties.threshold());
+        if (hintsCount < hintsProperties.min()) {
+            hintsCount = hintsProperties.min();
         }
 
         return hintsCount;
     }
 
-    private List<Cell> getDifference(List<Cell> cells, List<Cell> target) {
+    private Set<Cell> getDifference(Set<Cell> cells, Set<Cell> target) {
         return cells.stream()
                 .filter(cell -> !target.contains(cell))
-                .collect(Collectors.toCollection(ArrayList::new));
+                .collect(Collectors.toSet());
     }
 
     @Override
-    public Game save(Puzzle puzzle, User user, List<Cell> cells) {
+    public Game save(Puzzle puzzle, User user, Set<Cell> cells) {
         Game game = createIfNotPlayed(puzzle, user);
         game.clearAndAddCells(cells);
 
