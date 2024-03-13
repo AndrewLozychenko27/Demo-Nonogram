@@ -6,6 +6,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 
+import java.util.Arrays;
+
 @Entity
 public class Cell {
     @Id
@@ -63,6 +65,11 @@ public class Cell {
         return (obj instanceof Cell cell)
                 && (this.getX().equals(cell.getX()))
                 && (this.getY().equals(cell.getY()));
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(new short[]{x, y});
     }
 
     @Override
