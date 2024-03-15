@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Configuration>
+    <Appenders>
+        <Console name="Console">
+            <PatternLayout pattern="%d{dd MMM yyyy HH:mm:ss.SSS} %highlight{%-5level %c{-3}} %msg%n"
+                           disableAnsi="false"/>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="Console"/>
+        </Root>
+        <Logger name="ua.lozychenko.nonogram" level="debug" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+    </Loggers>
+</Configuration>
