@@ -149,7 +149,7 @@ public class Game {
         return hints.stream().anyMatch(hint -> hint.getCell().equals(new Cell(x, y)));
     }
 
-    public boolean containsRemoved(short x, short y) {
-        return hints.stream().anyMatch(hint -> hint.getCell().equals(new Cell(x, y)) && hint.isRemoved());
+    public boolean containsRemoval(short x, short y) {
+        return hints.stream().anyMatch(hint -> hint.getCell().equals(new Cell(x, y)) && hint.isRemoval());
     }
 }

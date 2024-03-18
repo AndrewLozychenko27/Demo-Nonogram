@@ -25,12 +25,13 @@ CREATE TABLE cell
 
 CREATE TABLE puzzle
 (
-    id      int8 PRIMARY KEY,
-    name    varchar(256) NOT NULL,
-    width   smallint     NOT NULL,
-    height  smallint     NOT NULL,
-    visible boolean      NOT NULL,
-    user_id int8         NOT NULL,
+    id        int8 PRIMARY KEY,
+    name      varchar(256) NOT NULL,
+    width     smallint     NOT NULL,
+    height    smallint     NOT NULL,
+    visible   boolean      NOT NULL DEFAULT TRUE,
+    generated boolean      NOT NULL DEFAULT FALSE,
+    user_id   int8         NOT NULL,
     CONSTRAINT FK_puzzle_users FOREIGN KEY (user_id) REFERENCES users (id)
 );
 
@@ -63,9 +64,9 @@ CREATE TABLE suggestion
 
 CREATE TABLE hint
 (
-    cell_id    int8    NOT NULL,
-    game_id    int8    NOT NULL,
-    is_removed boolean NOT NULL DEFAULT FALSE,
+    cell_id int8    NOT NULL,
+    game_id int8    NOT NULL,
+    removal boolean NOT NULL DEFAULT FALSE,
     CONSTRAINT FK_hint_cell FOREIGN KEY (cell_id) REFERENCES cell (id) ON DELETE CASCADE,
     CONSTRAINT FK_hint_game FOREIGN KEY (game_id) REFERENCES game (id) ON DELETE CASCADE
 );

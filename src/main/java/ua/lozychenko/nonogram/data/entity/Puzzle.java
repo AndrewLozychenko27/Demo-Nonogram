@@ -49,6 +49,8 @@ public class Puzzle {
 
     private Boolean visible;
 
+    private Boolean generated;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
@@ -67,6 +69,7 @@ public class Puzzle {
     public Puzzle() {
         this.cells = new HashSet<>();
         this.visible = true;
+        this.generated = false;
     }
 
     public Puzzle(String name, Short width, Short height, User user) {
@@ -109,12 +112,20 @@ public class Puzzle {
         this.height = height;
     }
 
-    public Boolean getVisible() {
+    public Boolean isVisible() {
         return visible;
     }
 
     public void setVisible(Boolean visible) {
         this.visible = visible;
+    }
+
+    public Boolean isGenerated() {
+        return generated;
+    }
+
+    public void setGenerated(Boolean generated) {
+        this.generated = generated;
     }
 
     public User getUser() {

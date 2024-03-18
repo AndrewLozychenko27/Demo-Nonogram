@@ -112,6 +112,7 @@ public class DefaultPuzzleService extends DefaultBaseService<Puzzle> implements 
     @Override
     public Puzzle fillPuzzleRandomly(Puzzle puzzle) {
         puzzle = generators.get(new Random().nextInt(generators.size())).generate(puzzle);
+        puzzle.setGenerated(true);
         repo.save(puzzle);
 
         return puzzle;

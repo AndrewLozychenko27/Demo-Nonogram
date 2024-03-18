@@ -129,7 +129,7 @@ public class DefaultGameService extends DefaultBaseService<Game> implements Game
     }
 
     private Set<Cell> excludeRemoved(Set<Cell> cells, Game game) {
-        return cells.stream().filter(cell -> !game.containsRemoved(cell.getX(), cell.getY())).collect(Collectors.toSet());
+        return cells.stream().filter(cell -> !game.containsRemoval(cell.getX(), cell.getY())).collect(Collectors.toSet());
     }
 
     private Set<Cell> hintByRemoving(int hintsCount, Set<Cell> cellsToRemove, Set<Cell> cells) {
@@ -138,8 +138,8 @@ public class DefaultGameService extends DefaultBaseService<Game> implements Game
         Set<Cell> removed = new HashSet<>();
         List<Cell> cellList = new ArrayList<>(cellsToRemove);
 
-        for (int i = 0; i < hintsCount && !cellsToRemove.isEmpty(); i++) {
-            hint = cellList.get(random.nextInt(cellsToRemove.size()));
+        for (int i = 0; i < hintsCount && !cellList.isEmpty(); i++) {
+            hint = cellList.get(random.nextInt(cellList.size()));
             cells.remove(hint);
             cellList.remove(hint);
             removed.add(hint);
@@ -154,8 +154,8 @@ public class DefaultGameService extends DefaultBaseService<Game> implements Game
         Set<Cell> hints = new HashSet<>();
         List<Cell> cellList = new ArrayList<>(cellsToHint);
 
-        for (int i = 0; i < hintsCount && !cellsToHint.isEmpty(); i++) {
-            hint = cellList.get(random.nextInt(cellsToHint.size()));
+        for (int i = 0; i < hintsCount && !cellList.isEmpty(); i++) {
+            hint = cellList.get(random.nextInt(cellList.size()));
             hints.add(hint);
             cellList.remove(hint);
         }

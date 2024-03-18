@@ -51,7 +51,7 @@
                             </#if>
                         </p>
                     </th>
-                    <#if currentUser.id == puzzle.user.id && !puzzle.isEmpty()>
+                    <#if currentUser.id == puzzle.user.id && !puzzle.isEmpty() && puzzle.isGenerated() == false>
                         <#list 0..<puzzle.width as x>
                             <#assign cellStyle="cell"/>
                             <td class="table-cell p-0 <#if x !=0 && (x + 1) % 5 == 0>b-r</#if> <#if y !=0 && (y + 1) % 5 == 0>b-b</#if>">
@@ -79,7 +79,7 @@
                                                 disabled
                                                 <#assign cellStyle="hint"/>
                                             </#if>
-                                            <#if game.containsRemoved(y, x)>
+                                            <#if game.containsRemoval(y, x)>
                                                 disabled
                                                 <#assign cellStyle="removed"/>
                                             </#if>

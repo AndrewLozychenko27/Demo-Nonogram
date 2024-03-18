@@ -22,10 +22,10 @@ public class Hint {
     @JoinColumn(name = "game_id")
     private Game game;
 
-    private Boolean isRemoved;
+    private Boolean removal;
 
     public Hint() {
-        isRemoved = false;
+        removal = false;
     }
 
     public Hint(Cell cell, Game game) {
@@ -35,9 +35,9 @@ public class Hint {
         this.game = game;
     }
 
-    public Hint(Cell cell, Game game, Boolean isRemoved) {
+    public Hint(Cell cell, Game game, Boolean removal) {
         this(cell, game);
-        this.isRemoved = isRemoved;
+        this.removal = removal;
     }
 
     public HintPrimaryKey getId() {
@@ -64,11 +64,11 @@ public class Hint {
         this.game = game;
     }
 
-    public Boolean isRemoved() {
-        return isRemoved;
+    public Boolean isRemoval() {
+        return removal;
     }
 
-    public void setRemoved(Boolean removed) {
-        isRemoved = removed;
+    public void setRemoval(Boolean removal) {
+        this.removal = removal;
     }
 }

@@ -70,8 +70,13 @@
                                 </#if>
                             <#elseif puzzle.user.id == currentUser.id>
                                 <div class="row m-2">
-                                    <a class="btn btn-outline-primary mb-2" role="button"
-                                       href="<@u.path "puzzle/" + puzzle.id + "/view"/>">View</a>
+                                    <#if puzzle.isGenerated()>
+                                        <a class="btn btn-outline-success mb-2" role="button"
+                                           href="<@u.path "puzzle/" + puzzle.id + "/play"/>">Play</a>
+                                    <#else>
+                                        <a class="btn btn-outline-primary mb-2" role="button"
+                                           href="<@u.path "puzzle/" + puzzle.id + "/view"/>">View</a>
+                                    </#if>
                                     <a class="btn btn-outline-danger" role="button"
                                        href="<@u.path "puzzle/" + puzzle.id + "/delete"/>">Delete</a>
                                 </div>
