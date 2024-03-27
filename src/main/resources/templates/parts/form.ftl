@@ -108,8 +108,8 @@
     </div>
 </#macro>
 
-<#macro form action method="POST">
-    <form action="<@u.path action/>" method="${method}" class="m-0">
+<#macro form action method="POST" enctype="">
+    <form action="<@u.path action/>" method="${method}" class="m-0" enctype="${enctype}">
         <input type="hidden" name="_csrf" value="${_csrf.token}"/>
         <#nested/>
     </form>
