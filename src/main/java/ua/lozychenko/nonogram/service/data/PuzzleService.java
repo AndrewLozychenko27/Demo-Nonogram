@@ -5,6 +5,8 @@ import org.springframework.data.domain.Pageable;
 import ua.lozychenko.nonogram.data.entity.Puzzle;
 import ua.lozychenko.nonogram.data.entity.util.Hints;
 
+import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 public interface PuzzleService extends BaseService<Puzzle> {
@@ -14,5 +16,7 @@ public interface PuzzleService extends BaseService<Puzzle> {
 
     Hints generateKeys(Puzzle puzzle);
 
-    Puzzle fillPuzzleRandomly(Puzzle puzzle);
+    Puzzle generatePuzzleRandomly(Puzzle puzzle);
+
+    List<Puzzle> generatePuzzlesByImage(Puzzle puzzle, byte[] bytes) throws IOException;
 }

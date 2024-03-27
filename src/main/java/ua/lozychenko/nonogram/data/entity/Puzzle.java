@@ -55,7 +55,7 @@ public class Puzzle {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @ManyToMany(cascade = {CascadeType.MERGE})
     @JoinTable(
             name = "solution",
             joinColumns = @JoinColumn(name = "puzzle_id"),

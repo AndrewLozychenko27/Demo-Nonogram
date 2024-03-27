@@ -52,6 +52,8 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST,
                                         "/logout",
                                         "/puzzle/create",
+                                        "/puzzle/save/image",
+                                        "/puzzle/save/random",
                                         "/puzzle/{puzzle_id}/check",
                                         "/api/game/{puzzle_id}/check",
                                         "/api/game/{puzzle_id}/save-state",
