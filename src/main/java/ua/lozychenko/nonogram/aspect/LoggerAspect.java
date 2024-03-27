@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import ua.lozychenko.nonogram.data.entity.Puzzle;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -75,14 +74,13 @@ public class LoggerAspect {
         String className = getClassName(point);
         Logger log = getLogger(className);
         Method method = getMethod(point);
-        Puzzle puzzle = (Puzzle) point.getArgs()[0];
 
-        log.debug("{} {}({}) for puzzle {}(#{})",
+        log.debug("{} {}({}) for puzzle {}:{}",
                 method.getReturnType(),
                 method.getName(),
                 parseArgs(point.getArgs()),
-                puzzle.getName(),
-                puzzle.getId());
+                point.getArgs()[0],
+                point.getArgs()[1]);
     }
 
     private void logGet(JoinPoint point, Method method) {
@@ -123,6 +121,6 @@ public class LoggerAspect {
     }
 
     private String parseArgs(Object[] args) {
-        return Arrays.stream(args).map(a -> a.getClass().getSimpleName()).collect(Collectors.joining(", "));
+        return Arrays.stream(args).map(a -> a == null ? "null" : a.getClass().getSimpleName()).collect(Collectors.joining(", "));
     }
 }
