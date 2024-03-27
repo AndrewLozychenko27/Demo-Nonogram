@@ -3,10 +3,12 @@ package ua.lozychenko.nonogram.service.generator.impl;
 import org.springframework.stereotype.Service;
 import ua.lozychenko.nonogram.config.property.PuzzleGeneratorProperty;
 import ua.lozychenko.nonogram.data.entity.Cell;
-import ua.lozychenko.nonogram.data.entity.Puzzle;
 import ua.lozychenko.nonogram.service.data.CellService;
 import ua.lozychenko.nonogram.service.generator.PuzzleGenerator;
 import ua.lozychenko.nonogram.service.generator.impl.base.MirroredPuzzleGenerator;
+
+import java.util.LinkedList;
+import java.util.Set;
 
 @Service
 public class HorizontallyMirroredPuzzleGenerator extends MirroredPuzzleGenerator implements PuzzleGenerator {
@@ -15,13 +17,13 @@ public class HorizontallyMirroredPuzzleGenerator extends MirroredPuzzleGenerator
     }
 
     @Override
-    public Puzzle generate(Puzzle puzzle) {
-        puzzle = addRandomCells(puzzle,
-                getCellsByLimit(puzzle.getWidth(), (short) (puzzle.getHeight() / 2)),
-                getCount(puzzle.getWidth() * puzzle.getHeight() / 2));
+    public Set<Cell> generate(short width, short height) {
+        Set<Cell> cells = getRandomCells(
+                new LinkedList<>(getCellsByLimit(width, (short) (height / 2))),
+                getCount(width * height / 2));
 
-        puzzle.addCells(mirrorCells(puzzle, (p, c) -> new Cell(c.getX(), p.getHeight() - 1 - c.getY())));
+        cells.addAll(mirrorCells(cells, c -> new Cell(c.getX(), height - 1 - c.getY())));
 
-        return puzzle;
+        return cells;
     }
 }

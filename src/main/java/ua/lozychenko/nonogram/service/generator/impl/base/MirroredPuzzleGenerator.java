@@ -2,12 +2,12 @@ package ua.lozychenko.nonogram.service.generator.impl.base;
 
 import ua.lozychenko.nonogram.config.property.PuzzleGeneratorProperty;
 import ua.lozychenko.nonogram.data.entity.Cell;
-import ua.lozychenko.nonogram.data.entity.Puzzle;
 import ua.lozychenko.nonogram.service.data.CellService;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public abstract class MirroredPuzzleGenerator extends BasePuzzleGenerator {
     private final CellService cellService;
@@ -18,13 +18,13 @@ public abstract class MirroredPuzzleGenerator extends BasePuzzleGenerator {
         this.cellService = cellService;
     }
 
-    protected Set<Cell> mirrorCells(Puzzle puzzle, BiFunction<Puzzle, Cell, Cell> mirrorFunction) {
-        Set<Cell> cells = new HashSet<>();
+    protected Set<Cell> mirrorCells(Set<Cell> cells, Function<Cell, Cell> mirrorFunction) {
+        Set<Cell> res = new HashSet<>();
 
-        for (Cell cell : puzzle.getCells()) {
-            cells.add(cellService.findOrCreate(mirrorFunction.apply(puzzle, cell)));
+        for (Cell cell : cells) {
+            res.add(cellService.findOrCreate(mirrorFunction.apply(cell)));
         }
 
-        return cells;
+        return res;
     }
 }
