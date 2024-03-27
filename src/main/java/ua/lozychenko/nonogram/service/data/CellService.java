@@ -12,7 +12,7 @@ public interface CellService extends BaseService<Cell> {
 
     Cell findOrCreate(Cell cell);
 
-    List<Cell> findAllByLimit(short x, short y);
+    Set<Cell> findAllByLimit(short x, short y);
 
-    List<Cell> findAllByLimitDiagonally(short x, short y, boolean isReverse);
+    Set<Cell> findAllByLimitDiagonally(short x, short y, boolean isReverse);
 }

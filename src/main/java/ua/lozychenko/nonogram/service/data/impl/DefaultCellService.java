@@ -6,7 +6,6 @@ import ua.lozychenko.nonogram.data.repo.CellRepo;
 import ua.lozychenko.nonogram.service.data.CellService;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -50,12 +49,12 @@ public class DefaultCellService extends DefaultBaseService<Cell> implements Cell
     }
 
     @Override
-    public List<Cell> findAllByLimit(short x, short y) {
+    public Set<Cell> findAllByLimit(short x, short y) {
         return repo.findAllByLimit(x, y);
     }
 
     @Override
-    public List<Cell> findAllByLimitDiagonally(short x, short y, boolean isReverse) {
+    public Set<Cell> findAllByLimitDiagonally(short x, short y, boolean isReverse) {
         return isReverse
                 ? repo.findAllByLimitDiagonallyReverse(x, y)
                 : repo.findAllByLimitDiagonally(x, y);
