@@ -1,7 +1,9 @@
 package ua.lozychenko.nonogram.service.generator;
 
-import ua.lozychenko.nonogram.data.entity.Puzzle;
+import ua.lozychenko.nonogram.data.entity.Cell;
+
+import java.util.Set;
 
 public interface PuzzleGenerator {
-    Puzzle generate(Puzzle puzzle);
+    Set<Cell> generate(short width, short height);
 }
