@@ -52,6 +52,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST,
                                         "/logout",
                                         "/puzzle/create",
+                                        "/puzzle/fill",
                                         "/puzzle/save/image",
                                         "/puzzle/save/random",
                                         "/puzzle/{puzzle_id}/check",
@@ -75,11 +76,9 @@ public class SecurityConfig {
 
                                 .requestMatchers(HttpMethod.GET,
                                         "/puzzle/{puzzle_id}/view",
-                                        "/puzzle/{puzzle_id}/fill",
                                         "/puzzle/{puzzle_id}/delete")
                                 .access(processExpression("@securityHelper.isPuzzleOwner(principal, #puzzle_id)"))
                                 .requestMatchers(HttpMethod.POST,
-                                        "/puzzle/{puzzle_id}/fill",
                                         "/puzzle/{puzzle_id}/delete")
                                 .access(processExpression("@securityHelper.isPuzzleOwner(principal, #puzzle_id)"))
 

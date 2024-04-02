@@ -88,7 +88,6 @@ public class PuzzleController {
         User user = ControllerHelper.getCurrentUser(session);
 
         if (result.hasErrors()) {
-            model.addAttribute("puzzle", puzzle);
             model.addAttribute(BINDING_RESULT + "puzzle", ValidationHelper.filterErrors(result));
         } else {
             puzzle.setUser(user);
@@ -99,9 +98,30 @@ public class PuzzleController {
                 session.setAttribute("generatedPuzzles", puzzleService.generatePuzzlesByImage(puzzle, image.getBytes()));
                 view = "puzzle-generated-image";
             } else {
-                puzzleService.save(puzzle);
-                view = "redirect:/puzzle/list";
+                session.setAttribute("emptyPuzzle", puzzle);
+                view = "puzzle-fill";
             }
+        }
+
+        return view;
+    }
+
+    @PostMapping("/fill")
+    public String fill(@RequestParam(name = "cell", required = false) String[] coordinates,
+                       HttpSession session,
+                       Model model) {
+        String view;
+        Puzzle puzzle = (Puzzle) session.getAttribute("emptyPuzzle");
+
+        if (coordinates == null) {
+            model.addAttribute("error", "Puzzle must be filled!");
+            view = "puzzle-fill";
+        } else {
+            puzzle.addCells(cellService.parseCells(coordinates));
+            puzzle.setVisible(true);
+            puzzleService.save(puzzle);
+            view = "redirect:/puzzle/list";
+            session.removeAttribute("emptyPuzzle");
         }
 
         return view;
@@ -143,34 +163,6 @@ public class PuzzleController {
         model.addAttribute("keys", puzzleService.generateKeys(puzzle));
 
         return "puzzle-play";
-    }
-
-    @GetMapping("/{puzzle_id}/fill")
-    public String fillForm(@PathVariable("puzzle_id") Puzzle puzzle,
-                           Model model) {
-        model.addAttribute("puzzle", puzzle);
-
-        return "puzzle-fill";
-    }
-
-    @PostMapping("/{puzzle_id}/fill")
-    public String fill(@PathVariable("puzzle_id") Puzzle puzzle,
-                       @RequestParam(name = "cell", required = false) String[] coordinates,
-                       Model model) {
-        String view;
-
-        if (coordinates == null) {
-            model.addAttribute("error", "Puzzle must be filled!");
-            model.addAttribute("puzzle", puzzle);
-            view = "puzzle-fill";
-        } else {
-            puzzle.addCells(cellService.parseCells(coordinates));
-            puzzle.setVisible(true);
-            puzzleService.save(puzzle);
-            view = "redirect:/puzzle/list";
-        }
-
-        return view;
     }
 
     @GetMapping("/{puzzle_id}/delete")
