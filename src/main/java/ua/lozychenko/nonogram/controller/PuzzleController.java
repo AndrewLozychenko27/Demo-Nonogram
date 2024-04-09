@@ -39,6 +39,7 @@ import static ua.lozychenko.nonogram.constants.ControllerConstants.BINDING_RESUL
 public class PuzzleController {
     public static final String RANDOM = "random";
     public static final String IMAGE = "image";
+    public static final String MANUAL = "manual";
     private final PuzzlePageProperty properties;
     private final PuzzleService puzzleService;
     private final CellService cellService;
@@ -97,7 +98,7 @@ public class PuzzleController {
             } else if (IMAGE.equals(fill)) {
                 session.setAttribute("generatedPuzzles", puzzleService.generatePuzzlesByImage(puzzle, image.getBytes()));
                 view = "puzzle-generated-image";
-            } else {
+            } else if (MANUAL.equals(fill)) {
                 session.setAttribute("emptyPuzzle", puzzle);
                 view = "puzzle-fill";
             }

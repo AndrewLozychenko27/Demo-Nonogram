@@ -1,5 +1,12 @@
 package ua.lozychenko.nonogram.constraint.util;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
@@ -11,12 +18,6 @@ import ua.lozychenko.nonogram.constraint.UniquePuzzleName;
 import ua.lozychenko.nonogram.data.entity.Puzzle;
 import ua.lozychenko.nonogram.data.entity.User;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,6 +32,7 @@ public class ValidationHelper {
 
     static {
         PRIORITY.put(NotEmpty.class.getSimpleName(), 0);
+        PRIORITY.put(NotBlank.class.getSimpleName(), 0);
         PRIORITY.put(NotNull.class.getSimpleName(), 0);
         PRIORITY.put(Size.class.getSimpleName(), 1);
         PRIORITY.put(Min.class.getSimpleName(), 1);
