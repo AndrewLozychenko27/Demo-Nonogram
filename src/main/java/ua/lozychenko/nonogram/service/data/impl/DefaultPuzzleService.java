@@ -57,13 +57,6 @@ public class DefaultPuzzleService extends DefaultBaseService<Puzzle> implements 
     }
 
     @Override
-    public Puzzle edit(Puzzle source, Puzzle changes) {
-        source.setName(getIfChanged(source.getName(), changes.getName()));
-
-        return repo.save(source);
-    }
-
-    @Override
     public boolean delete(Long id) {
         Puzzle puzzle = repo.getReferenceById(id);
 
