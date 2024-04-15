@@ -24,6 +24,8 @@ import ua.lozychenko.nonogram.service.data.CellService;
 import ua.lozychenko.nonogram.service.data.GameService;
 import ua.lozychenko.nonogram.service.data.PuzzleService;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -33,6 +35,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(PuzzleController.class)
@@ -315,7 +318,7 @@ public class PuzzleControllerTest {
     @WithMockUser(username = "player@gmail.com")
     void fill_shouldReturnError_whenCoordinatesIsNull() throws Exception {
         MvcResult result = mvc.perform(
-                        multipart("/puzzle/fill")
+                        post("/puzzle/fill")
                                 .with(csrf())
                                 .sessionAttr("emptyPuzzle", new Puzzle())
                 )
@@ -331,7 +334,7 @@ public class PuzzleControllerTest {
     @WithMockUser(username = "player@gmail.com")
     void fill_shouldRedirect_andProcessPuzzle_whenCoordinatesIsSet() throws Exception {
         MvcResult result = mvc.perform(
-                        multipart("/puzzle/fill")
+                        post("/puzzle/fill")
                                 .with(csrf())
                                 .queryParam("cell", "1:1", "0:2")
                                 .sessionAttr("emptyPuzzle", new Puzzle())
@@ -343,5 +346,38 @@ public class PuzzleControllerTest {
         verify(puzzleService, atLeastOnce()).save(any());
         assertThat(result.getRequest().getSession()).isNotNull();
         assertThat(result.getRequest().getSession().getAttribute("emptyPuzzle")).isNull();
+    }
+
+    @Test
+    @WithMockUser(username = "player@gmail.com")
+    void saveImage_shouldRedirect_andSaveGeneratedPuzzle_andRemoveSessionAttribute_whenRequested() throws Exception {
+        MvcResult result = mvc.perform(
+                        post("/puzzle/save/image")
+                                .with(csrf())
+                                .queryParam("puzzleId", "0")
+                                .sessionAttr("generatedPuzzles", List.of(new Puzzle()))
+                )
+                .andExpect(status().is3xxRedirection())
+                .andReturn();
+
+        verify(puzzleService, atLeastOnce()).save(any());
+        assertThat(result.getRequest().getSession()).isNotNull();
+        assertThat(result.getRequest().getSession().getAttribute("generatedPuzzles")).isNull();
+    }
+
+    @Test
+    @WithMockUser(username = "player@gmail.com")
+    void saveRandom_shouldRedirect_andSaveGeneratedPuzzle_andRemoveSessionAttribute_whenRequested() throws Exception {
+        MvcResult result = mvc.perform(
+                        post("/puzzle/save/random")
+                                .with(csrf())
+                                .sessionAttr("generatedPuzzle", new Puzzle())
+                )
+                .andExpect(status().is3xxRedirection())
+                .andReturn();
+
+        verify(puzzleService, atLeastOnce()).save(any());
+        assertThat(result.getRequest().getSession()).isNotNull();
+        assertThat(result.getRequest().getSession().getAttribute("generatedPuzzle")).isNull();
     }
 }
