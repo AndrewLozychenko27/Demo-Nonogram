@@ -148,8 +148,8 @@ public class PuzzleController {
     }
 
     @GetMapping("/{puzzle_id}/view")
-    public String editForm(@PathVariable("puzzle_id") Puzzle puzzle,
-                           Model model) {
+    public String view(@PathVariable("puzzle_id") Puzzle puzzle,
+                       Model model) {
         model.addAttribute("puzzle", puzzle);
         model.addAttribute("puzzleStats", gameService.getPuzzleStats(puzzle));
         model.addAttribute("keys", puzzleService.generateKeys(puzzle));
