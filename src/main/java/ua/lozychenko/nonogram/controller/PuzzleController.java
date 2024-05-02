@@ -1,6 +1,9 @@
 package ua.lozychenko.nonogram.controller;
 
 import jakarta.servlet.http.HttpSession;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.common.header.Header;
+import org.apache.kafka.common.header.internals.RecordHeader;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -22,15 +25,25 @@ import ua.lozychenko.nonogram.constraint.group.NameGroup;
 import ua.lozychenko.nonogram.constraint.group.SizeGroup;
 import ua.lozychenko.nonogram.constraint.util.ValidationHelper;
 import ua.lozychenko.nonogram.controller.util.ControllerHelper;
+import ua.lozychenko.nonogram.data.entity.Cell;
 import ua.lozychenko.nonogram.data.entity.Puzzle;
 import ua.lozychenko.nonogram.data.entity.User;
 import ua.lozychenko.nonogram.service.data.CellService;
 import ua.lozychenko.nonogram.service.data.GameService;
 import ua.lozychenko.nonogram.service.data.PuzzleService;
+import ua.lozychenko.nonogram.service.messenger.MessengerService;
+import ua.lozychenko.nonogram.service.messenger.dto.CellsDto;
+import ua.lozychenko.nonogram.service.messenger.dto.PuzzleGenerateRequestDto;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.function.Function;
 
 import static ua.lozychenko.nonogram.constants.ControllerConstants.BINDING_RESULT;
 
@@ -40,16 +53,19 @@ public class PuzzleController {
     public static final String RANDOM = "random";
     public static final String IMAGE = "image";
     public static final String MANUAL = "manual";
+    public static final String GENERATION_MODE = "generationMode";
     private final PuzzlePageProperty properties;
     private final PuzzleService puzzleService;
     private final CellService cellService;
     private final GameService gameService;
+    private final MessengerService<String, PuzzleGenerateRequestDto, CellsDto> messengerService;
 
-    public PuzzleController(PuzzlePageProperty properties, PuzzleService puzzleService, CellService cellService, GameService gameService) {
+    public PuzzleController(PuzzlePageProperty properties, PuzzleService puzzleService, CellService cellService, GameService gameService, MessengerService<String, PuzzleGenerateRequestDto, CellsDto> messengerService) {
         this.properties = properties;
         this.puzzleService = puzzleService;
         this.cellService = cellService;
         this.gameService = gameService;
+        this.messengerService = messengerService;
     }
 
     @ModelAttribute
@@ -84,23 +100,55 @@ public class PuzzleController {
                                @RequestParam(required = false) MultipartFile image,
                                BindingResult result,
                                HttpSession session,
-                               Model model) throws IOException {
+                               Model model) throws IOException, ExecutionException, InterruptedException, TimeoutException {
         String view = "puzzle-create";
         User user = ControllerHelper.getCurrentUser(session);
+        Function<CellsDto, Object> parseResponse = null;
 
         if (result.hasErrors()) {
             model.addAttribute(BINDING_RESULT + "puzzle", ValidationHelper.filterErrors(result));
         } else {
             puzzle.setUser(user);
-            if (RANDOM.equals(fill)) {
-                session.setAttribute("generatedPuzzle", puzzleService.generatePuzzleRandomly(puzzle));
-                view = "puzzle-generated-random";
-            } else if (IMAGE.equals(fill)) {
-                session.setAttribute("generatedPuzzles", puzzleService.generatePuzzlesByImage(puzzle, image.getBytes()));
-                view = "puzzle-generated-image";
-            } else if (MANUAL.equals(fill)) {
-                session.setAttribute("emptyPuzzle", puzzle);
+            session.setAttribute("emptyPuzzle", puzzle);
+            if (MANUAL.equals(fill)) {
                 view = "puzzle-fill";
+            } else {
+                List<Header> headers = new LinkedList<>();
+                String sessionAttr = "generatedPuzzle";
+                PuzzleGenerateRequestDto puzzleGenerateRequestDto = new PuzzleGenerateRequestDto(
+                        cellService.findAllByLimit(puzzle.getWidth(), puzzle.getHeight()),
+                        puzzle.getWidth(),
+                        puzzle.getHeight(),
+                        image == null ? new byte[]{} : image.getBytes()
+                );
+
+                if (RANDOM.equals(fill)) {
+                    headers.add(new RecordHeader(GENERATION_MODE, RANDOM.getBytes()));
+                    parseResponse = cellsDto -> {
+                        puzzle.setCells(cellsDto.getCells().get(0));
+                        return puzzle;
+                    };
+                    view = "puzzle-generated-random";
+                } else if (IMAGE.equals(fill)) {
+                    sessionAttr = "generatedPuzzles";
+                    headers.add(new RecordHeader(GENERATION_MODE, IMAGE.getBytes()));
+                    parseResponse = cellsDto -> {
+                        List<Puzzle> puzzles = new LinkedList<>();
+                        Puzzle copy;
+
+                        for (Set<Cell> cells : cellsDto.getCells()) {
+                            copy = new Puzzle(puzzle.getName(), puzzle.getWidth(), puzzle.getHeight(), puzzle.getUser());
+                            copy.addCells(cells);
+                            puzzles.add(copy);
+                        }
+
+                        return puzzles;
+                    };
+                    view = "puzzle-generated-image";
+                }
+                ConsumerRecord<String, CellsDto> response = messengerService.send(puzzleGenerateRequestDto, headers).get(10, TimeUnit.SECONDS);
+                session.setAttribute(sessionAttr, parseResponse.apply(response.value()));
+
             }
         }
 

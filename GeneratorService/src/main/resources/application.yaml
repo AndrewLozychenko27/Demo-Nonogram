@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: GeneratorService
+
+server:
+  port: 8081
+
+puzzle:
+  generator:
+    fillPercent: 0.5
+    fillPercentRange: 0.15
+    emptyPuzzle: 0.05
+    thresholdMultipliers: 0.7, 0.85, 1, 1.15, 1.3

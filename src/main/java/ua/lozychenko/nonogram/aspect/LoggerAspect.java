@@ -7,6 +7,7 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -62,10 +63,12 @@ public class LoggerAspect {
     public void logControllers(JoinPoint point) {
         Method method = getMethod(point);
 
-        if (method.getAnnotation(GetMapping.class) == null) {
+        if (method.getAnnotation(PostMapping.class) != null) {
             logPost(point, method);
-        } else {
+        } else if (method.getAnnotation(GetMapping.class) != null) {
             logGet(point, method);
+        } else if (method.getAnnotation(KafkaListener.class) != null) {
+            logKafka(point, method);
         }
     }
 
@@ -100,6 +103,17 @@ public class LoggerAspect {
 
         log.debug("POST {} {}({})",
                 Arrays.toString(method.getAnnotation(PostMapping.class).value()),
+                method.getName(),
+                parseArgs(point.getArgs())
+        );
+    }
+
+    private void logKafka(JoinPoint point, Method method) {
+        String className = getClassName(point);
+        Logger log = getLogger(className);
+
+        log.debug("Kafka {} {}({})",
+                Arrays.toString(method.getAnnotation(KafkaListener.class).topics()),
                 method.getName(),
                 parseArgs(point.getArgs())
         );

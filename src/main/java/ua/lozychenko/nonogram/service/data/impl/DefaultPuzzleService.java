@@ -11,7 +11,6 @@ import ua.lozychenko.nonogram.data.entity.util.Hints;
 import ua.lozychenko.nonogram.data.repo.PuzzleRepo;
 import ua.lozychenko.nonogram.service.data.CellService;
 import ua.lozychenko.nonogram.service.data.PuzzleService;
-import ua.lozychenko.nonogram.service.generator.PuzzleGenerator;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -23,7 +22,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -33,15 +31,13 @@ import java.util.stream.Stream;
 @Service
 public class DefaultPuzzleService extends DefaultBaseService<Puzzle> implements PuzzleService {
     private final PuzzleRepo repo;
-    private final List<PuzzleGenerator> generators;
     private final CellService cellService;
 
     private final PuzzleGeneratorProperty puzzleGeneratorProperty;
 
-    public DefaultPuzzleService(PuzzleRepo repo, List<PuzzleGenerator> generators, CellService cellService, GameScoreProperty gameScoreProperty, PuzzleGeneratorProperty puzzleGeneratorProperty) {
+    public DefaultPuzzleService(PuzzleRepo repo, CellService cellService, GameScoreProperty gameScoreProperty, PuzzleGeneratorProperty puzzleGeneratorProperty) {
         super(repo);
         this.repo = repo;
-        this.generators = generators;
         this.cellService = cellService;
         this.puzzleGeneratorProperty = puzzleGeneratorProperty;
     }
@@ -119,7 +115,7 @@ public class DefaultPuzzleService extends DefaultBaseService<Puzzle> implements 
 
     @Override
     public Puzzle generatePuzzleRandomly(Puzzle puzzle) {
-        puzzle.addCells(generators.get(new Random().nextInt(generators.size())).generate(puzzle.getWidth(), puzzle.getHeight()));
+        //puzzle.addCells(generators.get(new Random().nextInt(generators.size())).generate(puzzle.getWidth(), puzzle.getHeight()));
         puzzle.setGenerated(true);
 
         return puzzle;

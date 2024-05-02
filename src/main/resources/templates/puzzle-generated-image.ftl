@@ -12,7 +12,7 @@
     </#if>
 
     <div class="w-90 m-auto">
-        <@f.form "puzzle/save">
+        <@f.form "puzzle/save/image">
             <div class="row row-cols-1 row-cols-md-${cols} g-4 my-3">
                 <#list generatedPuzzles as puzzle>
                     <div class="col">

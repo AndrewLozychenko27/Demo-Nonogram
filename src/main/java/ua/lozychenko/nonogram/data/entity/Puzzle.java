@@ -36,7 +36,7 @@ public class Puzzle {
 
     @NotBlank(message = "Puzzle name is required", groups = NameGroup.class)
     @Length(max = 256, message = "Puzzle name must be no longer than {max} characters", groups = NameGroup.class)
-    @Pattern(regexp = "^\\w+$", message = "Puzzle name must contain only a-z, A-Z, 0-9 and _", groups = NameGroup.class)
+    @Pattern(regexp = "^[\\w ]+$", message = "Puzzle name must contain only a-z, A-Z, 0-9 and _", groups = NameGroup.class)
     private String name;
 
     @NotNull(message = "Width is required", groups = SizeGroup.class)
