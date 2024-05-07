@@ -16,6 +16,9 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.validator.constraints.Length;
 import ua.lozychenko.nonogram.constraint.UniquePuzzleName;
 import ua.lozychenko.nonogram.constraint.group.NameGroup;
@@ -26,6 +29,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+@Data
+@NoArgsConstructor
 @Entity
 @UniquePuzzleName(groups = NameGroup.class)
 public class Puzzle {
@@ -49,9 +54,9 @@ public class Puzzle {
     @Max(value = 40, message = "Height must be no longer than {value}", groups = SizeGroup.class)
     private Short height;
 
-    private Boolean visible;
+    private Boolean visible = true;
 
-    private Boolean generated;
+    private Boolean generated = false;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -63,99 +68,29 @@ public class Puzzle {
             joinColumns = @JoinColumn(name = "puzzle_id"),
             inverseJoinColumns = @JoinColumn(name = "cell_id")
     )
-    private Set<Cell> cells;
+    private Set<Cell> cells = new HashSet<>();
 
     @OneToMany(mappedBy = "puzzle")
+    @ToString.Exclude
     private List<Game> games;
 
-    public Puzzle() {
-        this.cells = new HashSet<>();
-        this.visible = true;
-        this.generated = false;
-    }
-
     public Puzzle(String name, Short width, Short height, User user) {
-        this();
         this.name = name;
         this.width = width;
         this.height = height;
         this.user = user;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Short getWidth() {
-        return width;
-    }
-
-    public void setWidth(Short width) {
-        this.width = width;
-    }
-
-    public Short getHeight() {
-        return height;
-    }
-
-    public void setHeight(Short height) {
-        this.height = height;
     }
 
     public Boolean isVisible() {
         return visible;
     }
 
-    public void setVisible(Boolean visible) {
-        this.visible = visible;
-    }
-
     public Boolean isGenerated() {
         return generated;
     }
 
-    public void setGenerated(Boolean generated) {
-        this.generated = generated;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Set<Cell> getCells() {
-        return cells;
-    }
-
-    public void setCells(Set<Cell> cells) {
-        this.cells = cells;
-    }
-
     public Optional<Game> getGame(User user) {
         return games.stream().filter(game -> game.getUser().getId().equals(user.getId())).findFirst();
-    }
-
-    public List<Game> getGames() {
-        return games;
-    }
-
-    public void setGames(List<Game> games) {
-        this.games = games;
     }
 
     public void addCell(Cell cell) {

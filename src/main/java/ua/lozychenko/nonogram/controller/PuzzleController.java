@@ -52,7 +52,7 @@ import static ua.lozychenko.nonogram.constants.ControllerConstants.BINDING_RESUL
 public class PuzzleController {
     public static final String RANDOM = "random";
     public static final String IMAGE = "image";
-    public static final String MANUAL = "manual";
+    public static final String MANUALLY = "manually";
     public static final String GENERATION_MODE = "generationMode";
     private final PuzzlePageProperty properties;
     private final PuzzleService puzzleService;
@@ -110,7 +110,7 @@ public class PuzzleController {
         } else {
             puzzle.setUser(user);
             session.setAttribute("emptyPuzzle", puzzle);
-            if (MANUAL.equals(fill)) {
+            if (MANUALLY.equals(fill)) {
                 view = "puzzle-fill";
             } else {
                 List<Header> headers = new LinkedList<>();

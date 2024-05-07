@@ -13,12 +13,17 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+@Data
+@NoArgsConstructor
 @Entity
 public class Game {
     @Id
@@ -26,7 +31,7 @@ public class Game {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "game_seq")
     private Long id;
 
-    private Integer attempts;
+    private Integer attempts = 0;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -34,6 +39,7 @@ public class Game {
 
     @ManyToOne
     @JoinColumn(name = "puzzle_id")
+    @ToString.Exclude
     private Puzzle puzzle;
 
     @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
@@ -42,85 +48,21 @@ public class Game {
             joinColumns = @JoinColumn(name = "game_id"),
             inverseJoinColumns = @JoinColumn(name = "cell_id")
     )
-    private Set<Cell> cells;
+    private Set<Cell> cells = new HashSet<>();
 
     @OneToMany(mappedBy = "game", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
-    private List<Hint> hints;
+    private List<Hint> hints = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
-    private State state;
-
-    public Game() {
-        this.attempts = 0;
-        this.cells = new HashSet<>();
-        this.hints = new ArrayList<>();
-        this.state = State.IN_PROGRESS;
-    }
+    private State state = State.IN_PROGRESS;
 
     public Game(Puzzle puzzle, User user) {
-        this();
         this.puzzle = puzzle;
         this.user = user;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Integer getAttempts() {
-        return attempts;
-    }
-
-    public void setAttempts(Integer attempts) {
-        this.attempts = attempts;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Puzzle getPuzzle() {
-        return puzzle;
-    }
-
-    public void setPuzzle(Puzzle puzzle) {
-        this.puzzle = puzzle;
-    }
-
-    public Set<Cell> getCells() {
-        return cells;
-    }
-
-    public void setCells(Set<Cell> cells) {
-        this.cells = cells;
     }
 
     public List<Cell> getHints() {
         return hints.stream().map(Hint::getCell).toList();
-    }
-
-    public State getState() {
-        return state;
-    }
-
-    public void setState(State state) {
-        this.state = state;
-    }
-
-    public void addCell(Cell cell) {
-        cells.add(cell);
-    }
-
-    public void addCells(List<Cell> cells) {
-        this.cells.addAll(cells);
     }
 
     public void addHints(Set<Cell> hints) {

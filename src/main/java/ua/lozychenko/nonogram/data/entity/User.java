@@ -10,6 +10,9 @@ import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,6 +25,8 @@ import ua.lozychenko.nonogram.constraint.group.PasswordGroup;
 import java.util.Collection;
 import java.util.List;
 
+@Data
+@NoArgsConstructor
 @Entity(name = "users")
 @UniqueEmail(groups = CredentialsGroup.class)
 @PasswordConfirmation(groups = PasswordGroup.class)
@@ -44,94 +49,29 @@ public class User implements UserDetails {
     @NotEmpty(message = "Password is required", groups = PasswordGroup.class)
     @Length(min = 8, max = 256, message = "Password must be from {min} to {max} characters long", groups = PasswordGroup.class)
     @StrongPassword(groups = PasswordGroup.class)
+    @ToString.Exclude
     private String password;
 
     @Transient
     @NotEmpty(message = "Password confirmation is required", groups = PasswordGroup.class)
+    @ToString.Exclude
     private String passwordConfirmation;
-    private Boolean activated;
+    private Boolean activated = true;
 
-    private Integer score;
+    private Integer score = 0;
 
     @Enumerated(EnumType.STRING)
-    private Role role;
-
-    public User() {
-        this.activated = true;
-        this.role = Role.PLAYER;
-        this.score = 0;
-    }
+    private Role role = Role.PLAYER;
 
     public User(String nickname, String email, String password, String passwordConfirmation) {
-        this();
         this.nickname = nickname;
         this.email = email;
         this.password = password;
-        this.passwordConfirmation = passwordConfirmation;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getNickname() {
-        return nickname;
-    }
-
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getPasswordConfirmation() {
-        return passwordConfirmation;
-    }
-
-    public void setPasswordConfirmation(String passwordConfirmation) {
         this.passwordConfirmation = passwordConfirmation;
     }
 
     public Boolean isActivated() {
         return activated;
-    }
-
-    public void setActivated(boolean activated) {
-        this.activated = activated;
-    }
-
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
-
-    public Integer getScore() {
-        return score;
-    }
-
-    public void setScore(Integer score) {
-        this.score = score;
     }
 
     @Override
