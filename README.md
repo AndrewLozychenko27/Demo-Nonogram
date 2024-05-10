@@ -1,6 +1,6 @@
 # Nonogram
 
-#### v 0.7
+#### v 0.8.3
 
 ### by Andrii Lozychenko
 
@@ -28,6 +28,8 @@ My project is based on the Japanese puzzle Nonogram, where you need to draw a pi
 * FreeMarker
 * HTML, CSS, JS, Bootstrap 5.3
 * OAuth2
+* Apache Kafka
+* Lombok
 
 ## About project
 
@@ -81,18 +83,18 @@ or by converting an uploaded picture.
 
 ## Planned Features
 - [ ] Puzzle
-  - [ ] Generate puzzle with a pseudo-random algorithm
-  - [ ] Generate puzzle by a uploaded picture
+  - [x] Generate puzzle with a pseudo-random algorithm
+  - [x] Generate puzzle by a uploaded picture
   - [ ] Colored puzzles
   - [ ] Puzzle list's filters, search and sort
   - [ ] Rating
-- [ ] Move "heavy" generation processes to a separate app and join them with a message broker (probably **Apache Kafka**)
+- [x] Move "heavy" generation processes to a separate app and join them with a message broker (probably **Apache Kafka**)
 - [ ] **OpenAPI 3.0 / Swagger**
 - [ ] User's profile customization 
   - [ ] Profile picture
   - [ ] Player's stats
 - [ ] Tests
-  - [ ] Unit tests
+  - [x] Unit tests
   - [ ] Integration tests
 - [ ] Front-end
   - [ ] Add more design
