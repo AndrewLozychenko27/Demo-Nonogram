@@ -35,7 +35,10 @@ public class SecurityConfig {
                                         "/static/**",
                                         "/",
                                         "/login",
-                                        "/user/create")
+                                        "/user/create",
+                                        "/v3/api-docs/**",
+                                        "/swagger-ui/**",
+                                        "/openapi.yaml")
                                 .permitAll()
                                 .requestMatchers(HttpMethod.POST,
                                         "/login",

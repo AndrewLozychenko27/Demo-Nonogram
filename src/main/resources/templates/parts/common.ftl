@@ -95,6 +95,9 @@
                         <li class="nav-item">
                             <a class="nav-link">About</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<@u.path "swagger-ui/index.html"/>">Docs / API</a>
+                        </li>
                     </ul>
                 </div>
             </div>

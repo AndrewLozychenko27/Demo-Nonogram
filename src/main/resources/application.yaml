@@ -55,3 +55,8 @@ kafka:
   replyTopic: puzzle-generation-response
   requestTopic: puzzle-generation-request
   timeout: 10
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    url: /openapi.yaml

@@ -5,5 +5,5 @@ public interface GameStats {
 
     String getEmail();
 
-    Double getScore();
+    Integer getScore();
 }

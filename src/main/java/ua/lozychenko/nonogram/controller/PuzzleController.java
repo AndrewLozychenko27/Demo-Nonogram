@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpSession;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.internals.RecordHeader;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -54,6 +55,9 @@ public class PuzzleController {
     public static final String IMAGE = "image";
     public static final String MANUALLY = "manually";
     public static final String GENERATION_MODE = "generationMode";
+
+    @Value("${kafka.timeout}")
+    private Integer TIMEOUT;
     private final PuzzlePageProperty properties;
     private final PuzzleService puzzleService;
     private final CellService cellService;
@@ -146,7 +150,7 @@ public class PuzzleController {
                     };
                     view = "puzzle-generated-image";
                 }
-                ConsumerRecord<String, CellsDto> response = messengerService.send(puzzleGenerateRequestDto, headers).get(10, TimeUnit.SECONDS);
+                ConsumerRecord<String, CellsDto> response = messengerService.send(puzzleGenerateRequestDto, headers).get(TIMEOUT, TimeUnit.SECONDS);
                 session.setAttribute(sessionAttr, parseResponse.apply(response.value()));
 
             }
